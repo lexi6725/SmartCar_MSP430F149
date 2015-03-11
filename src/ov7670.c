@@ -4,8 +4,9 @@
  * Date: 2015/03/10
  */
 
+#include "config.h"
+#include "ov7670.h"
 #ifdef MODULE_OV7670
 
-#include "ov7670.h"
 
 #endif

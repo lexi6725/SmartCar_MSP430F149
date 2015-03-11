@@ -7,4 +7,5 @@
 #ifndef __OV7670_H__
 #define __OV7670_H__
 
+
 #endif

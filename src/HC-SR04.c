@@ -4,9 +4,10 @@
  * Date: 2015/03/10
  */
 
+#include "config.h"
+#include "HC-SR04.h"
 #ifdef MODULE_SR04
 
-#include "HC-SR04.h"
 
 
 #endif
