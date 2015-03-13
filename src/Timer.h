@@ -33,6 +33,7 @@
 
 
 extern void TimerB_Init(void);
-extern void TimerB_Exit(void);
-extern void SetTimerBRate(unsigned char TimerB1Bit, unsigned int Rate);
+extern void EnableTimerB(void);
+extern void DisableTimerB(void);
+extern void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate);
 #endif

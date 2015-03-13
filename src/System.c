@@ -6,12 +6,16 @@
 
 #include "config.h"
 #include "Timer.h"
+#include "pwm.h"
 
-/*
+uint SystemFlag = 0;
+
+/****************************************************
  * 函数名：Init_clk
  * 参数： None
+ * 返回值：None
  * 功能：初始化系统时钟
- */
+ ****************************************************/
 void Init_clk(void)
 {
 	uchar i;
@@ -27,13 +31,14 @@ void Init_clk(void)
 	IFG1 &= ~OFIFG;
 }
 
-/*
+/**********************************************************
  * 函数名：System_Init
  * 参数： None
  * 功能：初始化系统
- */
+ **********************************************************/
 void System_Init(void)
 {
 	Init_clk();
 	TimerB_Init();
+	Init_PWM();
 }

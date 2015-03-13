@@ -6,32 +6,58 @@
 
 #include "config.h"
 #include "timer.h"
+#include "pwm.h"
 #ifdef MODULE_TIMER
 
 
-
+/**************************************************
+ * 函数名：TimerB_Init
+ * 参数：None
+ * 返回值：None
+ * 功能：初始化TimerB定时器
+ **************************************************/
 void TimerB_Init(void)
 {
-	TBCTL |= TASSEL_2 + TBCLR;		// SMCLK + Stop Mode
+	TBCTL |= TASSEL_2 + TBCLR + MC_1;		// SMCLK + Up Mode
+	
+	/* TB1~TB3 TB6 To PWM Out */
 	TBCCTL1 = OUTMOD_7;
 	TBCCTL2 = OUTMOD_7;
 	TBCCTL3 = OUTMOD_7;
-	TBCCTL4 = OUTMOD_7;
+	TBCCTL6 = OUTMOD_7;
 }
 
+/**************************************************
+ * 函数名：EnableTimerB
+ * 参数：None
+ * 返回值：None
+ * 功能：使能TimerB定时器
+ **************************************************/
 void EnableTimerB(void)
 {
-	TBCTL	|= MC_2;
+	TBCTL	|= TBIE;		// Enable Timer B
 }
 
+/**************************************************
+ * 函数名：EnableTimerB
+ * 参数：None
+ * 返回值：None
+ * 功能：使能TimerB定时器
+ **************************************************/
 void DisableTimerB(void)
 {
-	TBCTL	|= TBCLR;
+	TBCTL	= 0;			// Disable Timer B
 }
 
-void SetTimerBRate(unsigned char TimerB1Bit, unsigned int Rate)
+/**************************************************
+ * 函数名：SetTimerBRate
+ * 参数：TimerBctl:配置的定时器， Rate：速率
+ * 返回值：None
+ * 功能：配置TimerB7定时器的某个定时器速率
+ **************************************************/
+void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate)
 {
-	switch(TimerB1Bit)
+	switch(TimerBctl)
 	{
 	case TIMERB0:			// TIMETB-0
 		DISABLE_TIMERB0();
@@ -71,10 +97,22 @@ void SetTimerBRate(unsigned char TimerB1Bit, unsigned int Rate)
 	}
 }
 
+/**************************************************
+ * 函数名：TimerB0_ISR
+ * 参数：None
+ * 返回值：None
+ * 功能：定时器B0中断服务
+ **************************************************/
 void TimerB0_ISR(void)
 {
 }
 
+/**************************************************
+ * 函数名：TimerB1_ISR
+ * 参数：None
+ * 返回值：None
+ * 功能：定时器B1中断服务
+ **************************************************/
 void TimerB1_ISR(void)
 {
 }
