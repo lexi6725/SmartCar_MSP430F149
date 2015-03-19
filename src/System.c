@@ -6,7 +6,7 @@
 
 #include "config.h"
 #include "Timer.h"
-#include "pwm.h"
+#include "motor.h"
 
 uint SystemFlag = 0;
 
@@ -39,6 +39,6 @@ void Init_clk(void)
 void System_Init(void)
 {
 	Init_clk();
-	TimerB_Init();
-	Init_PWM();
+	Init_Motor();
+	EnableMotor();
 }
