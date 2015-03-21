@@ -8,6 +8,14 @@
 #include "timer.h"
 #ifdef MODULE_TIMER
 
+void InitTimerB7(void)
+{
+	/* TB1~TB3 TB6 To PWM Out */
+	TBCCTL1 = OUTMOD_7;
+	TBCCTL2 = OUTMOD_7;
+	TBCCTL3 = OUTMOD_7;
+	TBCCTL6 = OUTMOD_7;
+}
 
 /**************************************************
  * 函数名：EnableTimerB
@@ -16,13 +24,7 @@
  * 功能：使能TimerB定时器
  **************************************************/
 void EnableTimerB(void)
-{	
-	/* TB1~TB3 TB6 To PWM Out */
-	TBCCTL1 = OUTMOD_7;
-	TBCCTL2 = OUTMOD_7;
-	TBCCTL3 = OUTMOD_7;
-	TBCCTL6 = OUTMOD_7;
-	
+{
 	TBCTL |= TASSEL_2 + TBCLR + MC_1;		// SMCLK + Up Mode
 }
 

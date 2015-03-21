@@ -7,6 +7,20 @@
 #include "config.h"
 #include "System.h"
 
+void Delay(unsigned long num)
+{
+	while (num > 0)
+	{
+		_NOP();
+		_NOP();
+		_NOP();
+		_NOP();
+		_NOP();
+		num--;
+	}
+}
+
+
 /****************************************************
  * 函数名：main
  * 参数： None
@@ -17,6 +31,8 @@ int main( void )
 {
 	// Stop watchdog timer to prevent time out reset
 	WDTCTL = WDTPW + WDTHOLD;
+	
+	Delay(0xFF0);
 	
 	System_Init();
 	

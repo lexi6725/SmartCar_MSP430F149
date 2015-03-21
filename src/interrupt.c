@@ -17,11 +17,11 @@
  * 返回值：None
  * 功能：TimerB0中断服务程序
  ****************************************************/
-#pragma vector=TIMERB0_VECTOR
+/*#pragma vector=TIMERB0_VECTOR
 __interrupt void ISR_Timer_B0(void)
 {
 	
-}
+}*/
 
 /****************************************************
  * 函数名：ISR_Timer_B1
@@ -29,8 +29,8 @@ __interrupt void ISR_Timer_B0(void)
  * 返回值：None
  * 功能：TimerB1中断服务程序
  ****************************************************/
-#pragma vector=TIMERB1_VECTOR
+/*#pragma vector=TIMERB1_VECTOR
 __interrupt void ISR_Timer_B1(void)
 {
 	
-}
+}*/

@@ -40,5 +40,6 @@ void System_Init(void)
 {
 	Init_clk();
 	Init_Motor();
+	InitTimerB7();
 	EnableMotor();
 }
