@@ -39,7 +39,10 @@ void Init_clk(void)
 void System_Init(void)
 {
 	Init_clk();
-	Init_Motor();
-	InitTimerB7();
+	Motor_Init();
+	TimerB7_Init();
 	EnableMotor();
+	
+	P2DIR	= 0xff;
+	P2OUT	|= 0xff;
 }

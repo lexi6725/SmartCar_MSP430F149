@@ -31,7 +31,7 @@
 #define ENABLE_TIMERB5()		(TBCCTL5 |= CCIE)
 #define ENABLE_TIMERB6()		(TBCCTL6 |= CCIE)
 
-extern void InitTimerB7(void);
+extern void TimerB7_Init(void);
 extern void EnableTimerB(void);
 extern void DisableTimerB(void);
 extern void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate);

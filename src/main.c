@@ -29,7 +29,7 @@ void Delay(unsigned long num)
  ****************************************************/
 int main( void )
 {
-	// Stop watchdog timer to prevent time out reset
+	// Stop watchdog timer to prevent time out reset 
 	WDTCTL = WDTPW + WDTHOLD;
 	
 	Delay(0xFF0);
@@ -38,7 +38,7 @@ int main( void )
 	
 	while(1)
 	{
-	}
-	
+		LPM0;
+	}	
 }
  

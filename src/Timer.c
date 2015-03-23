@@ -8,7 +8,7 @@
 #include "timer.h"
 #ifdef MODULE_TIMER
 
-void InitTimerB7(void)
+void TimerB7_Init(void)
 {
 	/* TB1~TB3 TB6 To PWM Out */
 	TBCCTL1 = OUTMOD_7;
@@ -25,7 +25,7 @@ void InitTimerB7(void)
  **************************************************/
 void EnableTimerB(void)
 {
-	TBCTL |= TASSEL_2 + TBCLR + MC_1;		// SMCLK + Up Mode
+	TBCTL |= TASSEL_2 + TBCLR + MC_1 + ID_3;		// SMCLK/8 + Up Mode
 }
 
 /**************************************************
@@ -93,5 +93,10 @@ void TimerB1_ISR(void)
 {
 }
 
+
+void TimerA3_Init(void)
+{
+	TACTL	|= TASSEL_2 + MC_2 + ID_3;
+}
 
 #endif

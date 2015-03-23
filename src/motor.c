@@ -8,8 +8,8 @@
 #include "motor.h"
 #include "Timer.h"
 
-uint MotorFreq = 800;
-uint MotorPulseWidth[4] = {200, 200, 200, 200};
+uint MotorFreq = 1024;
+uint MotorPulseWidth[4] = {300, 300, 1000, 1000};
 
 /**************************************************
  * Init_Motor
@@ -17,14 +17,14 @@ uint MotorPulseWidth[4] = {200, 200, 200, 200};
  * 返回值：None
  * 功能：初始化Motor所用引脚
  **************************************************/
-void Init_Motor(void)
+void Motor_Init(void)
 {	
 	// P4.1 P4.2 P4.3 P4.6: PWM脉冲输出，控制电机速度
 	P4SEL	|= BIT1+BIT2+BIT3+BIT6;
 	P4DIR	|= BIT1+BIT2+BIT3+BIT6;
 	
 	// P6.0 ~ P6.7: motor0~motor3电机运转方向控制
-	P6DIR	= 0xff;
+	//P6DIR	= 0xff;
 }
 
 /**************************************************
@@ -40,7 +40,7 @@ void EnableMotor(void)
 	SetTimerBRate(TIMERB1, MotorPulseWidth[MOTOR1]);
 	SetTimerBRate(TIMERB2, MotorPulseWidth[MOTOR2]);
 	SetTimerBRate(TIMERB3, MotorPulseWidth[MOTOR3]);
-	SetTimerBRate(TIMERB4, MotorPulseWidth[MOTOR4]);
+	SetTimerBRate(TIMERB6, MotorPulseWidth[MOTOR4]);
 	
 	EnableTimerB();
 }
@@ -67,4 +67,9 @@ void SetMotorRate(uchar motorctl, uint rate)
 	DisableMoter();
 	MotorPulseWidth[motorctl] = rate;
 	EnableMotor();
+}
+
+void SetMotorDir(uchar motorctl, uchar dir)
+{
+	
 }

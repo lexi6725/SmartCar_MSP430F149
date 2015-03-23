@@ -12,7 +12,7 @@
 #define MOTOR3		2
 #define MOTOR4		3
 
-extern void Init_Motor(void);
+extern void Motor_Init(void);
 extern void EnableMotor(void);
 extern void DisableMoter(void);
 extern void SetMotorRate(uchar motorctl, uint rate);
