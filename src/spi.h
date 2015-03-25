@@ -13,6 +13,10 @@
 #define SPI_RXD_EN()	ME1 |= USPIE0; IE1 |= URXIE0;
 #define SPI_RXD_DIS()	ME1 &= ~USPIE0; IE1 &= ~URXIE0;
 
-#defne SPI_RST()		U0CTL	&= ~SWRST;
+#define SPI_RST()		U0CTL &= ~SWRST;
+
+
+extern void SPI_RXD_ISR(void);
+extern void SPI_TXD_ISR(void);
 
 #endif

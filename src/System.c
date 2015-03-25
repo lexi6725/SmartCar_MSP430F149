@@ -41,6 +41,7 @@ void System_Init(void)
 	Init_clk();
 	Motor_Init();
 	TimerB7_Init();
+	ENABLE_TIMERB0();
 	EnableMotor();
 	
 	P2DIR	= 0xff;

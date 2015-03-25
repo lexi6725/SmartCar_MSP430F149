@@ -35,4 +35,7 @@ extern void TimerB7_Init(void);
 extern void EnableTimerB(void);
 extern void DisableTimerB(void);
 extern void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate);
+
+extern void TimerB0_ISR(void);
+extern void TimerB1_ISR(void);
 #endif
