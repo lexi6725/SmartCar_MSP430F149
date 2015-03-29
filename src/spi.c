@@ -6,6 +6,9 @@
 #include "config.h"
 #include "spi.h"
 
+uchar Rtx_Buf[50];
+uchar Rtx_ctrl;
+
 void SPIx_Init(void)
 {
 	P3SEL	= 0x0E;
@@ -16,15 +19,60 @@ void SPIx_Init(void)
 	U0MCTL	= 0x00;
 }
 
-uchar SPIx_ReadWriteByte(uchar TxData)
+uchar SPIx_RW(uchar Byte)
 {
-	return 0;
+	TXBUF_0 = Byte;
+	
+	return RXBUF_0;
 }
 
-void SPI_RXD_ISR(void)
+uchar SPIx_RW_Reg(uchar reg, uchar value)
 {
+	uchar status;
+	P3OUT	&= ~CSN;
+	status = SPIx_RW(reg);
+	SPIx_RW(value);
+	P3OUT	|= CSN;
+	
+	return status;
 }
 
-void SPI_TXD_ISR(void)
+uchar SPIx_Read(uchar reg)
 {
+	uchar reg_val;
+	P3OUT	&= ~CSN;
+	SPIx_RW(reg);
+	reg_val = SPIx_RW(0);
+	P3OUT	|= CSN;
+	
+	return reg_val;
 }
+
+uchar SPIx_Read_Buf(uchar reg, uchar *pBuf, uchar bytes)
+{
+	uchar status, byte_ctrl;
+	
+	P3OUT	&= ~CSN;
+	status = SPIx_RW(reg);
+	for (byte_ctrl = 0; byte_ctrl < bytes; ++byte_ctrl)
+		pBuf[byte_ctrl] = SPIx_RW(0);
+	P3OUT	|= CSN;
+	
+	return status;
+}
+
+uchar SPIx_Write_Buf(uchar reg, uchar *pBuf, uchar bytes)
+{
+	uchar status, byte_ctrl;
+	
+	P3OUT	&= ~CSN;
+	status	= SPIx_RW(reg);
+	for (byte_ctrl = 0; byte_ctrl < bytes; ++byte_ctrl)
+		SPI_RW(*pBuf++);
+	P3OUT	|= CSN;
+	
+	return status;
+}
+
+
+
