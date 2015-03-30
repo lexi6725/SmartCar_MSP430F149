@@ -41,9 +41,3 @@ __interrupt void ISR_SPI0(void)
 {
 	SPI_RXD_ISR();
 }
-
-#pragma vector=UART0TX_VECTOR
-__interrupt void ISR_SPI0_TXD(void)
-{
-	SPI_TXD_ISR();
-}

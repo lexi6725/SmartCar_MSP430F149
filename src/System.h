@@ -8,8 +8,9 @@
 #define __SYSTEM_H__
 
 /* SystemFlag Bits */
-#define SystemOK	(1<<0)
-#define PWMRUN		(1<<1)
+#define bSystemOK	(1<<0)
+#define bPWMRUN		(1<<1)
+#define bSECOND		(1<<2)
 
 extern uint SystemFlag;
 

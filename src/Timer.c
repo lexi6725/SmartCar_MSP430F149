@@ -6,7 +6,10 @@
 
 #include "config.h"
 #include "timer.h"
+#include "System.h"
 #ifdef MODULE_TIMER
+
+ulong	Second_count = 0;
 
 void TimerB7_Init(void)
 {
@@ -25,7 +28,7 @@ void TimerB7_Init(void)
  **************************************************/
 void EnableTimerB(void)
 {
-	TBCTL |= TASSEL_2 + TBCLR + MC_1 + ID_3;		// SMCLK/8 + Up Mode
+	TBCTL |= TASSEL_1 + TBCLR + MC_1;		// ACLK + Up Mode
 }
 
 /**************************************************
@@ -81,6 +84,11 @@ void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate)
  **************************************************/
 void TimerB0_ISR(void)
 {
+	if (++Second_count > SIZE_1K)
+	{
+		SystemFlag	|= bSECOND;
+		Second_count = 0;
+	}
 }
 
 /**************************************************
