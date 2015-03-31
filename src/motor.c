@@ -89,13 +89,13 @@ void SetMotorDir(uchar motorctl, uchar dir)
 void SetMotorDirs(uchar dir)
 {
 	if (dir == dirFORWARD)
-		P2OUT	= ((dirFORWARD)||(dirFORWARD<<2)||(dirFORWARD<<4)||(dirFORWARD<<6));
+		P2OUT	= ((dirFORWARD)+(dirFORWARD<<2)+(dirFORWARD<<4)+(dirFORWARD<<6));
 	else if (dir == dirROLLBACK)
-		P2OUT	= ((dirROLLBACK)||(dirROLLBACK<<2)||(dirROLLBACK<<4)||(dirROLLBACK<<6));
+		P2OUT	= ((dirROLLBACK)+(dirROLLBACK<<2)+(dirROLLBACK<<4)+(dirROLLBACK<<6));
 	else if (dir == dirLEFT)
-		P2OUT	= ((dirROLLBACK)||(dirROLLBACK<<2)||(dirFORWARD<<4)||(dirFORWARD<<6));
+		P2OUT	= ((dirROLLBACK)+(dirROLLBACK<<2)+(dirFORWARD<<4)+(dirFORWARD<<6));
 	else if (dir == dirRIGHT)
-		P2OUT	= ((dirFORWARD)||(dirFORWARD<<2)||(dirROLLBACK<<4)||(dirROLLBACK<<6));
+		P2OUT	= ((dirFORWARD)+(dirFORWARD<<2)+(dirROLLBACK<<4)+(dirROLLBACK<<6));
 	else
-		P2OUT	= ((dirDEBOOST)||(dirDEBOOST<<2)||(dirDEBOOST<<4)||(dirDEBOOST<<6));
+		P2OUT	= ((dirDEBOOST)+(dirDEBOOST<<2)+(dirDEBOOST<<4)+(dirDEBOOST<<6));
 }

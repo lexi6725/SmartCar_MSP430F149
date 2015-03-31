@@ -42,4 +42,5 @@ void System_Init(void)
 	EnableMotor();
 	_EINT();
 	P2DIR	= 0xff;
+	SetMotorDirs(dirFORWARD);
 }

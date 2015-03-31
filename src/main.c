@@ -44,12 +44,12 @@ int main( void )
 	{
 		if (SystemFlag&bSECOND)
 		{
-			if (second_count++ >= 3)
+			if (second_count++ >= 1)
 			{
-				SetMotorDirs(dir[indDir++]);
-				second_count = 0;
-				if (indDir > 5)
+				if (++indDir > 5)
 					indDir = 0;
+				SetMotorDirs(dir[indDir]);
+				second_count = 0;
 			}
 			SystemFlag	&= ~bSECOND;
 		}
