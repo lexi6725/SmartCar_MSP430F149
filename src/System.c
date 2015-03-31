@@ -11,27 +11,27 @@
 uint SystemFlag = 0;
 
 /****************************************************
- * 鍑芥暟鍚嶏細Init_clk
- * 鍙傛暟锛?None
- * 杩斿洖鍊硷細None
- * 鍔熻兘锛氬垵濮嬪寲绯荤粺鏃堕挓
+ * 函数名：Init_clk
+ * 参数＿None
+ * 返回值：None
+ * 功能：初始化系统时钟
  ****************************************************/
 void Init_clk(void)
 {
 	uchar i;
-	BCSCTL1	&= ~XT2OFF;			// 鎵撳紑XT2鎸崱鍣?	BCSCTL2	|= SELM1+SELS+DIVS_3;		// MCLK涓?MHz, SMCLK涓?MHz
+	BCSCTL1	&= ~XT2OFF;			// 打开XT2振荡噿	BCSCTL2	|= SELM1+SELS+DIVS_3;		// MCLK丿MHz, SMCLK丿MHz
 	
 	do{
-		IFG1 &= ~OFIFG;			// 娓呴櫎鎸崱鍣ㄩ敊璇爣蹇?		for(i = 0; i < 100; ++i)
-			_NOP();				// 寤舵椂绛夊緟
-	}while((IFG1&OFIFG) != 0);	// 濡傛灉鎸崱鍣ㄦ爣蹇楅敊璇紝鍒欑户缁瓑寰?	
+		IFG1 &= ~OFIFG;			// 清除振荡器错误标忿		for(i = 0; i < 100; ++i)
+			_NOP();				// 延时等待
+	}while((IFG1&OFIFG) != 0);	// 如果振荡器标志错误，则继续等徿	
 	IFG1 &= ~OFIFG;
 }
 
 /**********************************************************
- * 鍑芥暟鍚嶏細System_Init
- * 鍙傛暟锛?None
- * 鍔熻兘锛氬垵濮嬪寲绯荤粺
+ * 函数名：System_Init
+ * 参数＿None
+ * 功能：初始化系统
  **********************************************************/
 void System_Init(void)
 {

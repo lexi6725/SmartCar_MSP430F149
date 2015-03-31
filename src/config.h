@@ -11,8 +11,8 @@
 #include <math.h>
 #include <msp430x14x.h>
 
-#define		MODULE_PWM			// PWMç”µæœºé©±åŠ¨æ¨¡å—
-#define		MODULE_TIMER		// å®šæ—¶å™¨æ¨¡å—
+#define		MODULE_PWM			// PWMµç»úÇı¶¯Ä£¿é
+#define		MODULE_TIMER		// ¶¨Ê±Æ÷Ä£¿é
 
 #define		SIZE_1K		(1<<10)
 #define		SIZE_1M		(1<<20)

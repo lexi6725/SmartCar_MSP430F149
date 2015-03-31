@@ -1,7 +1,7 @@
 /*
-* æ–‡ä»¶åï¼šIrda.c
-* ä½œè€…ï¼šlexi
-* æ—¥æœŸï¼š2015/03/30
+* ÎÄ¼þÃû£ºIrda.c
+* ×÷Õß£ºlexi
+* ÈÕÆÚ£º2015/03/30
 */
 
 #include "config.h"

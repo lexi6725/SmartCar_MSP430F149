@@ -25,10 +25,11 @@ void TimerB7_Init(void)
 }
 
 /**************************************************
- * 鍑芥暟鍚嶏細EnableTimerB
- * 鍙傛暟锛歂one
- * 杩斿洖鍊硷細None
- * 鍔熻兘锛氫娇鑳絋imerB瀹氭椂鍣? **************************************************/
+ * 函数名：EnableTimerB
+ * 参数：None
+ * 返回值：None
+ * 功能：使能TimerB定时器 
+ **************************************************/
 void DisableTimerB(void)
 {
 	TBCTL	= 0 | TBCLR;			// Disable Timer B
@@ -46,10 +47,10 @@ void SyncTimerB(void)
 }
 
 /**************************************************
- * 鍑芥暟鍚嶏細SetTimerBRate
- * 鍙傛暟锛歍imerBctl:閰嶇疆鐨勫畾鏃跺櫒锛?Rate锛氶�熺巼
- * 杩斿洖鍊硷細None
- * 鍔熻兘锛氶厤缃甌imerB7瀹氭椂鍣ㄧ殑鏌愪釜瀹氭椂鍣ㄩ�熺巼
+ * 函数名：SetTimerBRate
+ * 参数：TimerBctl:配置的定时器＿Rate：速率
+ * 返回值：None
+ * 功能：配置TimerB7定时器的某个定时器速率
  **************************************************/
 void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate)
 {
@@ -57,10 +58,10 @@ void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate)
 }
 
 /**************************************************
- * 鍑芥暟鍚嶏細TimerB0_ISR
- * 鍙傛暟锛歂one
- * 杩斿洖鍊硷細None
- * 鍔熻兘锛氬畾鏃跺櫒B0涓柇鏈嶅姟
+ * 函数名：TimerB0_ISR
+ * 参数：None
+ * 返回值：None
+ * 功能：定时器B0中断服务
  **************************************************/
 uchar TimerB0_ISR(void)
 {
@@ -84,10 +85,10 @@ uint GetRandomNum(void)
 }
 
 /**************************************************
- * 鍑芥暟鍚嶏細TimerB1_ISR
- * 鍙傛暟锛歂one
- * 杩斿洖鍊硷細None
- * 鍔熻兘锛氬畾鏃跺櫒B1涓柇鏈嶅姟
+ * 函数名：TimerB1_ISR
+ * 参数：None
+ * 返回值：None
+ * 功能：定时器B1中断服务
  **************************************************/
 uchar TimerB1_ISR(void)
 {

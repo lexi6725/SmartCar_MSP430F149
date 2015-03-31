@@ -5,7 +5,7 @@
  */
 
 /*
- * ä¸­æ–­æœåŠ¡ç¨‹åºå®šä¹‰
+ * ÖĞ¶Ï·şÎñ³ÌĞò¶¨Òå
 */
 #include "config.h"
 #include "interrupt.h"
@@ -14,9 +14,9 @@
 
 /****************************************************
  * ISR_Timer_B0
- * å‚æ•°ï¼š None
- * è¿”å›å€¼ï¼šNone
- * åŠŸèƒ½ï¼šTimerB0ä¸­æ–­æœåŠ¡ç¨‹åº
+ * ²ÎÊı£º None
+ * ·µ»ØÖµ£ºNone
+ * ¹¦ÄÜ£ºTimerB0ÖĞ¶Ï·şÎñ³ÌĞò
  ****************************************************/
 #pragma vector=TIMERB0_VECTOR
 __interrupt void ISR_Timer_B0(void)
@@ -26,10 +26,10 @@ __interrupt void ISR_Timer_B0(void)
 }
 
 /****************************************************
- * å‡½æ•°åï¼šISR_Timer_B1
- * å‚æ•°ï¼š None
- * è¿”å›å€¼ï¼šNone
- * åŠŸèƒ½ï¼šTimerB1ä¸­æ–­æœåŠ¡ç¨‹åº
+ * º¯ÊıÃû£ºISR_Timer_B1
+ * ²ÎÊı£º None
+ * ·µ»ØÖµ£ºNone
+ * ¹¦ÄÜ£ºTimerB1ÖĞ¶Ï·şÎñ³ÌĞò
  ****************************************************/
 /*#pragma vector=TIMERB1_VECTOR
 __interrupt void ISR_Timer_B1(void)

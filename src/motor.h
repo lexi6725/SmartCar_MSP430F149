@@ -14,7 +14,7 @@
 
 #define MAXMOTORNUM		3
 
-// 鐢垫満鏂瑰悜瀹氫箟
+// 电机方向定义
 #define dirDEBOOST		0x00
 #define dirFORWARD		0x01
 #define dirROLLBACK		0x02
