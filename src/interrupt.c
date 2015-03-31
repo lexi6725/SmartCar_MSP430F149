@@ -21,7 +21,8 @@
 #pragma vector=TIMERB0_VECTOR
 __interrupt void ISR_Timer_B0(void)
 {
-	TimerB0_ISR();
+	if(TimerB0_ISR())
+		LPM0_EXIT;
 }
 
 /****************************************************

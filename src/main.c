@@ -7,6 +7,7 @@
 #include "config.h"
 #include "System.h"
 #include "motor.h"
+#include "Timer.h"
 
 void Delay(unsigned long num)
 {
@@ -30,7 +31,7 @@ void Delay(unsigned long num)
  ****************************************************/
 int main( void )
 {
-	uchar dir[5] = {dirFORWARD, dirROLLBACK, dirLEFT, dirRIGHT, dirDEBOOST};
+	uchar dir[4] = {dirFORWARD, dirROLLBACK, dirLEFT, dirRIGHT};
 	uchar indDir = 0;
 	uchar second_count = 0;
 	// Stop watchdog timer to prevent time out reset 
@@ -46,13 +47,15 @@ int main( void )
 		{
 			if (second_count++ >= 1)
 			{
-				if (++indDir > 5)
+				if (++indDir > 4)
 					indDir = 0;
-				SetMotorDirs(dir[indDir]);
+				SetMotorDirs(dir[GetRandomNum()]);
 				second_count = 0;
 			}
 			SystemFlag	&= ~bSECOND;
 		}
-	}	
+		
+		LPM0;
+	}
 }
  

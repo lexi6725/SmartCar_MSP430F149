@@ -7,13 +7,16 @@
 #include "config.h"
 #include "timer.h"
 #include "System.h"
-#ifdef MODULE_TIMER
 
 ulong	Second_count = 0;
+uint	TimerBRate[7] = {32, 32, 32, 32, 32, 32, 32};
+
+void SyncTimerB(void);
 
 void TimerB7_Init(void)
 {
-	/* TB1~TB3 TB6 To PWM Out */
+	/* TB1~TB3 TB6 To PWM Out Reset/Set */
+	SyncTimerB();
 	TBCCTL1 = OUTMOD_7;
 	TBCCTL2 = OUTMOD_7;
 	TBCCTL3 = OUTMOD_7;
@@ -31,6 +34,17 @@ void DisableTimerB(void)
 	TBCTL	= 0 | TBCLR;			// Disable Timer B
 }
 
+void SyncTimerB(void)
+{
+	TBCCR0 = TimerBRate[0];
+	TBCCR1 = TimerBRate[1];
+	TBCCR2 = TimerBRate[2];
+	TBCCR3 = TimerBRate[3];
+	TBCCR4 = TimerBRate[4];
+	TBCCR5 = TimerBRate[5];
+	TBCCR6 = TimerBRate[6];
+}
+
 /**************************************************
  * 函数名：SetTimerBRate
  * 参数：TimerBctl:配置的定时器�?Rate：速率
@@ -39,30 +53,7 @@ void DisableTimerB(void)
  **************************************************/
 void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate)
 {
-	switch(TimerBctl)
-	{
-	case TIMERB0:			// TIMETB-0
-		TBCCR0 = Rate;
-		break;
-	case TIMERB1:			// TIMETB-1
-		TBCCR1	= Rate;
-		break;
-	case TIMERB2:			// TIMETB-2
-		TBCCR2	= Rate;
-		break;
-	case TIMERB3:			// TIMETB-3
-		TBCCR3	= Rate;
-		break;
-	case TIMERB4:			// TIMETB-4
-		TBCCR4	= Rate;
-		break;
-	case TIMERB5:			// TIMETB-5
-		TBCCR5	= Rate;
-		break;
-	case TIMERB6:			// TIMETB-6
-		TBCCR6	= Rate;
-		break;
-	}
+	TimerBRate[TimerBctl] = Rate;
 }
 
 /**************************************************
@@ -71,13 +62,25 @@ void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate)
  * 返回值：None
  * 功能：定时器B0中断服务
  **************************************************/
-void TimerB0_ISR(void)
+uchar TimerB0_ISR(void)
 {
-	if (++Second_count > SIZE_1K)
+	uchar ret = 0;
+	
+	if (++Second_count >= SIZE_1K)
 	{
 		SystemFlag	|= bSECOND;
 		Second_count = 0;
+		ret = 1;
 	}
+	
+	SyncTimerB();
+	
+	return ret;
+}
+
+uint GetRandomNum(void)
+{
+	return TBR;
 }
 
 /**************************************************
@@ -86,7 +89,7 @@ void TimerB0_ISR(void)
  * 返回值：None
  * 功能：定时器B1中断服务
  **************************************************/
-void TimerB1_ISR(void)
+uchar TimerB1_ISR(void)
 {
 }
 
@@ -95,5 +98,3 @@ void TimerA3_Init(void)
 {
 	TACTL	|= TASSEL_2 + MC_2 + ID_3;
 }
-
-#endif

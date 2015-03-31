@@ -15,6 +15,11 @@
 #define TIMERB5		0x05
 #define TIMERB6		0x06
 
+#define MCLK_FREQ		(1<<23)
+#define SMCLK_FREQ		(1<<20)
+#define ACLK_FREQ		(1<<16)
+#define TIMERB_FREQ		(1<<10)
+
 #define DISABLE_TIMERB0()		(TBCCTL0 &= ~CCIE)
 #define DISABLE_TIMERB1()		(TBCCTL1 &= ~CCIE)
 #define DISABLE_TIMERB2()		(TBCCTL2 &= ~CCIE)
@@ -36,6 +41,8 @@ extern void EnableTimerB(uchar ctrbit);
 extern void DisableTimerB(void);
 extern void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate);
 
-extern void TimerB0_ISR(void);
-extern void TimerB1_ISR(void);
+extern uint	GetRandomNum(void);
+
+extern uchar TimerB0_ISR(void);
+extern uchar TimerB1_ISR(void);
 #endif

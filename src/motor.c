@@ -8,9 +8,7 @@
 #include "motor.h"
 #include "Timer.h"
 
-uint MotorFreq = 32;
-uint MotorPulseWidth[4] = {16, 64, 16, 16};
-
+const uchar Directs[5] = {0x00, 0xAA, 0x55, 0xA5, 0x5A};
 /**************************************************
  * Init_Motor
  * 参数：None
@@ -28,22 +26,17 @@ void Motor_Init(void)
  * 返回值：None
  * 功能：设置Motor速率，启动电�? **************************************************/
 void EnableMotor(void)
-{
-	SetTimerBRate(TIMERB0, MotorFreq);
-	
-	SetTimerBRate(TIMERB1, MotorPulseWidth[MOTOR_LF]);
-	SetTimerBRate(TIMERB2, MotorPulseWidth[MOTOR_LB]);
-	SetTimerBRate(TIMERB3, MotorPulseWidth[MOTOR_RF]);
-	SetTimerBRate(TIMERB6, MotorPulseWidth[MOTOR_RB]);
-	
+{	
 	P4SEL	|= BIT1+BIT2+BIT3+BIT6;
+	P4DIR	|= BIT1+BIT2+BIT3+BIT6;
 }
 
 /**************************************************
  * 函数名：DisableMoter
  * 参数：None
  * 返回值：None
- * 功能：停止电�? **************************************************/
+* 功能：停止电机 
+**************************************************/
 void DisableMoter(void)
 {
 	P4SEL	&= ~(BIT1+BIT2+BIT3+BIT6);
@@ -58,41 +51,27 @@ void DisableMoter(void)
  **************************************************/
 void SetMotorRate(uchar motorctl, uint rate)
 {
-	if (rate = 0 && rate > MAXRATE)
+	if (rate = 0 && rate > MAXRATE && motorctl < 4)
 		return;
 	
-	DisableMoter();
-	MotorPulseWidth[motorctl] = rate;
-	EnableMotor();
+	if (motorctl == 0)
+	{
+		SetTimerBRate(MOTOR_LF, rate);
+		SetTimerBRate(MOTOR_LB, rate);
+		SetTimerBRate(MOTOR_RF, rate);
+		SetTimerBRate(MOTOR_RB, rate);
+	}
+	else
+		SetTimerBRate(motorctl, rate);
 }
 
 /**************************************************
 * 函数名：SetMotorDir
 * 参数：motorctl: 控制的电机，dir:方向
 * 返回值：None
-* 功能：调整电机方�?*
+* 功能：调整电机方向
 ***************************************************/
-void SetMotorDir(uchar motorctl, uchar dir)
-{
-	if (motorctl > MAXMOTORNUM)
-		return;
-	
-	if (!dir)
-		P2OUT	&= (dir << (motorctl*2));
-	else
-		P2OUT	|= (dir << (motorctl*2));
-}
-
 void SetMotorDirs(uchar dir)
 {
-	if (dir == dirFORWARD)
-		P2OUT	= ((dirFORWARD)+(dirFORWARD<<2)+(dirFORWARD<<4)+(dirFORWARD<<6));
-	else if (dir == dirROLLBACK)
-		P2OUT	= ((dirROLLBACK)+(dirROLLBACK<<2)+(dirROLLBACK<<4)+(dirROLLBACK<<6));
-	else if (dir == dirLEFT)
-		P2OUT	= ((dirROLLBACK)+(dirROLLBACK<<2)+(dirFORWARD<<4)+(dirFORWARD<<6));
-	else if (dir == dirRIGHT)
-		P2OUT	= ((dirFORWARD)+(dirFORWARD<<2)+(dirROLLBACK<<4)+(dirROLLBACK<<6));
-	else
-		P2OUT	= ((dirDEBOOST)+(dirDEBOOST<<2)+(dirDEBOOST<<4)+(dirDEBOOST<<6));
+	P2OUT	= Directs[dir];
 }

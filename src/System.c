@@ -37,10 +37,12 @@ void System_Init(void)
 {
 	Init_clk();
 	Motor_Init();
+	TimerB7_Init();
+	
 	ENABLE_TIMERB0();
 	EnableMotor();
-	TimerB7_Init();
+	
 	_EINT();
-	P2DIR	= 0xff;
+	
 	SetMotorDirs(dirFORWARD);
 }
