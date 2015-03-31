@@ -19,11 +19,7 @@ uint MotorPulseWidth[4] = {16, 64, 16, 16};
 void Motor_Init(void)
 {	
 	// P4.1 P4.2 P4.3 P4.6: PWM脉冲输出，控制电机速度
-	P4SEL	|= BIT1+BIT2+BIT3+BIT6;
 	P4DIR	|= BIT1+BIT2+BIT3+BIT6;
-	
-	// P6.0 ~ P6.7: motor0~motor3电机运转方向控制
-	//P6DIR	= 0xff;
 }
 
 /**************************************************
@@ -39,6 +35,8 @@ void EnableMotor(void)
 	SetTimerBRate(TIMERB2, MotorPulseWidth[MOTOR_LB]);
 	SetTimerBRate(TIMERB3, MotorPulseWidth[MOTOR_RF]);
 	SetTimerBRate(TIMERB6, MotorPulseWidth[MOTOR_RB]);
+	
+	P4SEL	|= BIT1+BIT2+BIT3+BIT6;
 }
 
 /**************************************************
@@ -48,7 +46,8 @@ void EnableMotor(void)
  * 功能：停止电�? **************************************************/
 void DisableMoter(void)
 {
-	DisableTimerB();
+	P4SEL	&= ~(BIT1+BIT2+BIT3+BIT6);
+	P4DIR	&= ~(BIT1+BIT2+BIT3+BIT6);
 }
 
 /**************************************************
