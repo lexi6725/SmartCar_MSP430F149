@@ -39,8 +39,6 @@ void EnableMotor(void)
 	SetTimerBRate(TIMERB2, MotorPulseWidth[MOTOR_LB]);
 	SetTimerBRate(TIMERB3, MotorPulseWidth[MOTOR_RF]);
 	SetTimerBRate(TIMERB6, MotorPulseWidth[MOTOR_RB]);
-	
-	EnableTimerB();
 }
 
 /**************************************************
