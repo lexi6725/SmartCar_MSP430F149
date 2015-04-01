@@ -81,7 +81,9 @@ uchar TimerB0_ISR(void)
 
 uint GetRandomNum(void)
 {
-	return TBR;
+	uint random = TBR;
+	
+	return random*TAR;
 }
 
 /**************************************************
@@ -92,6 +94,7 @@ uint GetRandomNum(void)
  **************************************************/
 uchar TimerB1_ISR(void)
 {
+	return 0;
 }
 
 

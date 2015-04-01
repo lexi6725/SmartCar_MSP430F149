@@ -18,7 +18,6 @@ uint SystemFlag = 0;
  ****************************************************/
 void Init_clk(void)
 {
-	uchar i;
 	BCSCTL1	&= ~XT2OFF;			// ´ò¿ªXT2Õñµ´‡’	BCSCTL2	|= SELM1+SELS+DIVS_3;		// MCLKØ¯MHz, SMCLKØ¯MHz
 	
 	do{
@@ -38,9 +37,11 @@ void System_Init(void)
 	Init_clk();
 	Motor_Init();
 	TimerB7_Init();
+	TimerA3_Init();
 	
 	ENABLE_TIMERB0();
 	EnableMotor();
+	SetMotorDirs(dirFORWARD);
 	
 	_EINT();
 	

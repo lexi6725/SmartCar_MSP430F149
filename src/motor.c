@@ -18,6 +18,7 @@ void Motor_Init(void)
 {	
 	// P4.1 P4.2 P4.3 P4.6: PWM脉冲输出，控制电机速度
 	P4DIR	|= BIT1+BIT2+BIT3+BIT6;
+	P2DIR	|= 0xff;
 }
 
 /**************************************************
@@ -51,7 +52,7 @@ void DisableMoter(void)
  **************************************************/
 void SetMotorRate(uchar motorctl, uint rate)
 {
-	if (rate = 0 && rate > MAXRATE && motorctl < 4)
+	if (rate <= 0 && rate > MAXRATE && motorctl >= 4)
 		return;
 	
 	if (motorctl == 0)

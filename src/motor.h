@@ -7,10 +7,10 @@
 #ifndef __MOTOR_H__
 #define __MOTOR_H__
 
-#define MOTOR_LF		0
-#define MOTOR_LB		1
-#define MOTOR_RF		2
-#define MOTOR_RB		3
+#define MOTOR_LF		1
+#define MOTOR_LB		2
+#define MOTOR_RF		3
+#define MOTOR_RB		6
 
 #define MAXMOTORNUM		3
 

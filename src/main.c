@@ -45,17 +45,18 @@ int main( void )
 	{
 		if (SystemFlag&bSECOND)
 		{
-			if (second_count++ >= 1)
+			if (++second_count >= GetRandomNum()%3)
 			{
-				if (++indDir > 4)
+				if (++indDir >= 4)
 					indDir = 0;
-				SetMotorDirs(dir[GetRandomNum()]);
+				SetMotorDirs(dir[indDir]);
+				SetMotorRate(0, GetRandomNum()%32);
 				second_count = 0;
 			}
 			SystemFlag	&= ~bSECOND;
 		}
 		
-		LPM0;
+		//LPM0;
 	}
 }
  
