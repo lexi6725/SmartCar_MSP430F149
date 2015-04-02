@@ -46,4 +46,6 @@ extern uint	GetRandomNum(void);
 
 extern uchar TimerB0_ISR(void);
 extern uchar TimerB1_ISR(void);
+extern void SetIrdaPeriod(unsigned int rate);
+extern unsigned int GetTimerBRate(unsigned char TimerBctl);
 #endif

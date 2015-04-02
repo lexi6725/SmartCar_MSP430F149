@@ -7,6 +7,7 @@
 #include "config.h"
 #include "Timer.h"
 #include "motor.h"
+#include "irda.h"
 
 uint SystemFlag = 0;
 
@@ -42,8 +43,6 @@ void System_Init(void)
 	ENABLE_TIMERB0();
 	EnableMotor();
 	SetMotorDirs(dirFORWARD);
-	
+	Init_Irda();
 	_EINT();
-	
-	SetMotorDirs(dirFORWARD);
 }

@@ -9,7 +9,7 @@
 #include "System.h"
 
 ulong	Second_count = 0;
-uint	TimerBRate[7] = {32, 32, 32, 32, 32, 32, 32};
+uint	TimerBRate[7] = {32, 0, 0, 0, 0, 0, 0};
 
 void SyncTimerB(void);
 
@@ -46,6 +46,11 @@ void SyncTimerB(void)
 	TBCCR6 = TimerBRate[6];
 }
 
+void SetIrdaPeriod(unsigned int rate)
+{
+	TBCCR4	= rate;
+}
+
 /**************************************************
  * 函数名：SetTimerBRate
  * 参数：TimerBctl:配置的定时器＿Rate：速率
@@ -55,6 +60,11 @@ void SyncTimerB(void)
 void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate)
 {
 	TimerBRate[TimerBctl] = Rate;
+}
+
+unsigned int GetTimerBRate(unsigned char TimerBctl)
+{
+	return TimerBRate[TimerBctl];
 }
 
 /**************************************************
@@ -83,7 +93,7 @@ uint GetRandomNum(void)
 {
 	uint random = TBR;
 	
-	return random*TAR;
+	return random+TAR;
 }
 
 /**************************************************

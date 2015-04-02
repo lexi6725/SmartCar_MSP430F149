@@ -11,6 +11,7 @@
 #include "interrupt.h"
 #include "timer.h"
 #include "spi.h"
+#include "irda.h"
 
 /****************************************************
  * ISR_Timer_B0
@@ -30,14 +31,27 @@ __interrupt void ISR_Timer_B0(void)
  * 返回值：None
  * 功能：TimerB1中断服务程序
  ****************************************************/
-/*#pragma vector=TIMERB1_VECTOR
+#pragma vector=TIMERB1_VECTOR
 __interrupt void ISR_Timer_B1(void)
 {
-	
-}*/
+	if (TBIV&0x08)
+	{
+		IRDA_TIMER_ISR();
+	}
+}
 
 #pragma vector=UART0RX_VECTOR
 __interrupt void ISR_SPI0(void)
 {
 	SPI_RXD_ISR();
+}
+
+#pragma vector=PORT1_VECTOR
+__interrupt void ISR_IRDA(void)
+{
+	if (CHECK_IRDA())
+	{
+		IRDA_ISR();
+		CLR_IRDA_FLG();
+	}
 }

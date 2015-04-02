@@ -8,6 +8,7 @@
 #include "System.h"
 #include "motor.h"
 #include "Timer.h"
+#include "irda.h"
 
 void Delay(unsigned long num)
 {
@@ -34,7 +35,7 @@ int main( void )
 	uchar dir[4] = {dirFORWARD, dirROLLBACK, dirLEFT, dirRIGHT};
 	uchar indDir = 0;
 	uchar second_count = 0;
-	// Stop watchdog timer to prevent time out reset 
+	//Stop watchdog timer to prevent time out reset 
 	WDTCTL = WDTPW + WDTHOLD;
 	
 	Delay(0xFF0);
@@ -45,16 +46,18 @@ int main( void )
 	{
 		if (SystemFlag&bSECOND)
 		{
-			if (++second_count >= GetRandomNum()%3)
-			{
+			//if (++second_count >= GetRandomNum()%3)
+			//{
 				if (++indDir >= 4)
 					indDir = 0;
 				SetMotorDirs(dir[indDir]);
-				SetMotorRate(0, GetRandomNum()%32);
+				SetMotorRate(GetRandomNum()%3, GetRandomNum()%32);
 				second_count = 0;
-			}
+			//}
 			SystemFlag	&= ~bSECOND;
 		}
+
+		Irda_Process();
 		
 		//LPM0;
 	}
