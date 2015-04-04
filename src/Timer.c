@@ -7,9 +7,13 @@
 #include "config.h"
 #include "timer.h"
 #include "System.h"
+#include "irda.h"
 
 ulong	Second_count = 0;
 uint	TimerBRate[7] = {32, 0, 0, 0, 0, 0, 0};
+
+static struct Timer ms_timer[MS_MAX_TIMERS];
+static struct Timer us_timer[US_MAX_TIMERS];
 
 void SyncTimerB(void);
 
@@ -29,6 +33,8 @@ void TimerB7_Init(void)
 	TBCCTL3 = OUTMOD_7;
 	TBCCTL6 = OUTMOD_7;
 	TBCTL |= TASSEL_1 + TBCLR + MC_1;		// ACLK + Up Mode
+
+	memset((uchar *)&ms_timer[0], 0, sizeof(ms_timer));
 }
 
 /**************************************************
@@ -92,27 +98,139 @@ unsigned int GetTimerBRate(unsigned char TimerBctl)
 	return TimerBRate[TimerBctl];
 }
 
+struct Timer* GetTimerType(uchar type)
+{
+	if (type)
+		return us_timer;
+	
+	return ms_timer;
+}
+
+uchar GetTimerMaxNum(uchar type)
+{
+	if (type)
+		return US_MAX_TIMERS;
+
+	return MS_MAX_TIMERS;
+}
+
+void UpdateTimer(uchar type)
+{
+	struct Timer *timer = GetTimerType(type);
+	uchar	count = GetTimerMaxNum(type);
+	uchar	index;
+	
+	for (index = 0; index < count; ++index)
+	{
+		if (timer->chksum != CalCheckSum((uchar *)timer, sizeof(struct Timer)-1))
+			memset((uchar*)timer, 0, sizeof(struct Timer));
+		
+		if (timer->flag == TIMER_RUN)
+		{
+			if (--timer->count == 0)
+			{
+				timer->timer_isr();
+				timer->count= timer->period;
+			}
+			timer->chksum = CalCheckSum((uchar*)timer, sizeof(struct Timer)-1);
+		}
+		timer++;
+	}	
+}
+
+struct Timer* GetEmptyTimePoint(uchar type)
+{
+	uchar index;
+	struct Timer *timer = GetTimerType(type);
+	uchar num = GetTimerMaxNum(type);
+
+	for (index = 0; index < num; ++index)
+	{
+		if (timer->flag == NO_USE_TIMER)
+		{
+			return timer;
+		}
+	}
+
+	return NULL;
+}
+
+/*signed char AddTimer(struct Timer *t, uchar type)
+{
+	uchar index;
+	struct Timer *timer = GetTimerType(type);
+	uchar count = GetTimerMaxNum(type);
+
+	for (index = 0; index < count; ++index)
+	{
+		if (timer->flag == NO_USE_TIMER)
+		{
+			timer->flag = t->flag;
+			timer->count = t->period;
+			timer->period = t->period;
+			timer->timer_isr = t->timer_isr;
+			timer->chksum = CalCheckSum((uchar *)timer,sizeof(struct Timer)-1);
+			if (type)
+				return index|0x40;
+			return index;
+		}
+	}
+
+	return -ERR_NO_TIMER;
+}*/
+
+void DelTimer(struct Timer * timer)
+{
+	if (timer != NULL)
+		memset((uchar*)timer, 0, sizeof(struct Timer));
+}
+
+void StartTimer(struct Timer *timer)
+{
+	if (timer == NULL)
+		return;
+	
+	if (timer->chksum != CalCheckSum((uchar *)timer, sizeof(struct Timer)-1))
+	{
+		memset((uchar *)timer, 0, sizeof(struct Timer));
+		timer = NULL;
+	}
+	else
+	{
+		timer->flag = TIMER_RUN;
+		timer->count = timer->period;
+		timer->chksum = CalCheckSum((uchar *)timer, sizeof(struct Timer)-1);
+	}
+}
+
+void StopTimer(struct Timer *timer)
+{
+	if (timer == NULL)
+		return;
+
+	if (timer->chksum == CalCheckSum((uchar *)timer,sizeof(struct Timer)-1))
+	{
+		timer->flag = TIMER_STOP;
+		timer->chksum = CalCheckSum((uchar *)timer, sizeof(struct Timer)-1);
+	}
+	else
+	{
+		memset((uchar*)timer, 0, sizeof(struct Timer));
+		timer = NULL;
+	}
+}
+
 /**************************************************
  * 函数名：TimerB0_ISR
  * 参数：None
  * 返回值：None
  * 功能：定时器B0中断服务
  **************************************************/
-uchar TimerB0_ISR(void)
+void TimerB0_ISR(void)
 {
-	uchar ret = 0;
-	
-        // TimerB定时周期为1ms, SIZE_1K是1m
-	if (++Second_count >= SIZE_1K)
-	{
-		SystemFlag	|= bSECOND;
-		Second_count = 0;
-		ret = 1;
-	}
+	UpdateTimer(TIMER_TYPE_MS);
 	
 	SyncTimerB();     // 在一个定时周期后更新定时器
-	
-	return ret;
 }
 
 /*
@@ -134,9 +252,12 @@ uint GetRandomNum(void)
  * 返回值：None
  * 功能：定时器B1中断服务
  **************************************************/
-uchar TimerB1_ISR(void)
+void TimerB1_ISR(void)
 {
-	return 0;
+	if (TBIV&0x08)
+	{
+	  IRDA_TIMER_ISR();
+	}
 }
 
 /*
@@ -147,5 +268,12 @@ uchar TimerB1_ISR(void)
 */
 void TimerA3_Init(void)
 {
-	TACTL	|= TASSEL_2 + MC_2 + ID_3;
+	TACTL	|= TASSEL_2 + MC_2 + ID_3;		// SMCLK, Continue Mode, DIV:8
+	
+	memset((uchar *)&us_timer[0], 0, sizeof(us_timer));
+}
+
+void TimerA_ISR(void)
+{
+	UpdateTimer(TIMER_TYPE_US);
 }

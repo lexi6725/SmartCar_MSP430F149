@@ -16,17 +16,31 @@
 #define IRDA_TIMER_PERIOD	4
 #define IRDA_TIMERB			TIMERB4
 
-#define IRDA_RECV		(1<<0)
-#define IRDA_OK			(1<<1)
+#define IRDA_RECV			(1<<0)
+#define IRDA_OK				(1<<1)
+#define IRDA_START_TIMER	(1<<2)
 
-#define LEFT_ROTATE		0x08
-#define RIGHT_ROTATE	0x5A
-#define	FORWARD_ROTATE	0x18
-#define	ROLLBACK_ROTATE	0x52
-#define LEFT_FORWARD	0x0C
-#define RIGHT_FORWARD	0x5E
-#define LEFT_ROLLBACK	0x42
-#define	RIGHT_ROLLBACK	0x4A
+#define CH_REDUCE		0x45
+#define CH_DEFAULT		0x46
+#define CH_INCREASE		0x47
+#define PREV			0x44
+#define NEXT			0x40
+#define PLAY_PAUSE		0x43
+#define ADD				0x07
+#define REDUCE			0x15
+#define EQ				0xD9
+#define ADD_100			0x19
+#define ADD_200			0x0D
+#define DIGIT_0			0x16
+#define DIGIT_1			0x0C
+#define DIGIT_2			0x18
+#define DIGIT_3			0x5E
+#define DIGIT_4			0x08
+#define DIGIT_5			0x1C
+#define DIGIT_6			0x5A
+#define DIGIT_7			0x42
+#define DIGIT_8			0x52
+#define DIGIT_9			0x4A
 
 extern uchar Irda_Time;
 

@@ -34,10 +34,7 @@ __interrupt void ISR_Timer_B0(void)
 #pragma vector=TIMERB1_VECTOR
 __interrupt void ISR_Timer_B1(void)
 {
-	if (TBIV&0x08)
-	{
-		IRDA_TIMER_ISR();
-	}
+	TimerB1_ISR();
 }
 
 #pragma vector=UART0RX_VECTOR

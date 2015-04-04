@@ -36,6 +36,26 @@
 #define ENABLE_TIMERB5()		(TBCCTL5 |= CCIE)
 #define ENABLE_TIMERB6()		(TBCCTL6 |= CCIE)
 
+struct Timer {
+	uchar	flag;
+	uint	count;
+	uint	period;
+	void	(*timer_isr)(void);
+	uchar	chksum;
+};
+
+#define	MS_MAX_TIMERS		16
+#define	US_MAX_TIMERS		16
+
+/* Struct Timer's flag defined*/
+#define TIMER_RUN		0x1A
+#define TIMER_STOP		0xA1
+#define NO_USE_TIMER	0x00
+
+/* Define Timer Type */
+#define TIMER_TYPE_MS	0
+#define TIMER_TYPE_US	1
+
 extern void TimerA3_Init(void);
 extern void TimerB7_Init(void);
 extern void EnableTimerB(uchar ctrbit);
@@ -44,8 +64,15 @@ extern void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate);
 
 extern uint	GetRandomNum(void);
 
-extern uchar TimerB0_ISR(void);
-extern uchar TimerB1_ISR(void);
+extern void TimerB0_ISR(void);
+extern void TimerB1_ISR(void);
+extern void TimerA_ISR(void);
 extern void SetIrdaPeriod(unsigned int rate);
 extern unsigned int GetTimerBRate(unsigned char TimerBctl);
+
+extern struct Timer* GetEmptyTimePoint(uchar type);
+extern void DelTimer(struct Timer * timer);
+extern void StartTimer(struct Timer *timer);
+extern void StopTimer(struct Timer *timer);
+extern void UpdateTimer(uchar type);
 #endif

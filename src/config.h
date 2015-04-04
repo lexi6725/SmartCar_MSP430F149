@@ -8,6 +8,7 @@
 #define __CONFIG_H__
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include <msp430x14x.h>
 

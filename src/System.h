@@ -15,5 +15,5 @@
 extern uint SystemFlag;
 
 extern void System_Init(void);
-
+extern uchar CalCheckSum(uchar *pdat, uchar len);
 #endif

@@ -49,3 +49,14 @@ void System_Init(void)
 	Init_Irda();              // 初始化红外
 	_EINT();                  // 使能总中断
 }
+
+
+uchar CalCheckSum(uchar *pdat, uchar len)
+{
+	uchar chksum = 0;
+	while(len--)
+		chksum += pdat[len];
+
+	chksum	+= 0x5A;
+	return chksum;
+}

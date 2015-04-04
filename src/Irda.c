@@ -8,11 +8,24 @@
 #include "Irda.h"
 #include "Timer.h"
 #include "motor.h"
+#include "System.h"
 
 uchar Irda_Flag;
 uchar Irda_Time;
 uchar Irda_Data[33];
 uchar Irda_Code[4];
+static struct Timer *timer;
+
+void Init_Irda_Timer(void)
+{
+	if ((timer = GetEmptyTimePoint(TIMER_TYPE_US)) != NULL)
+	{
+		timer->flag = TIMER_STOP;
+		timer->period = 128;
+		timer->timer_isr = IRDA_TIMER_ISR;
+		timer->chksum = CalCheckSum((uchar *)timer, sizeof(struct Timer)-1);
+	}
+}
 
 void Init_Irda(void)
 {
@@ -20,8 +33,7 @@ void Init_Irda(void)
 	P1IES	|= IRDA;		// 下降沿触发中断
 	ENABLE_IRDA();			// 打开中断
 
-	SetTimerBRate(IRDA_TIMERB, 2);
-	ENABLE_TIMERB4();
+	Init_Irda_Timer();
 	Irda_Time = 0;
 	Irda_Flag = 0;
 }
@@ -97,13 +109,27 @@ void IRDA_ISR(void)
 
 	if (!Irda_Flag&(IRDA_RECV|IRDA_OK))
 		return;
+
+	if (!(Irda_Flag & IRDA_START_TIMER))
+	{
+		if ((timer == NULL))
+		{
+			Init_Irda_Timer();
+		}
+		StartTimer(timer);
+		Irda_Flag |= IRDA_START_TIMER;
+		return;
+	}
 	
 	if (Irda_Time<63&&Irda_Time>33)
+	{
 		index = 0;
+	}
 	Irda_Data[index] = Irda_Time;
 	Irda_Time = 0;
 	if(++index==33)
 	{
+		StopTimer(timer);
 		Irda_Flag	|= IRDA_RECV;
 		index = 0;
 	}
@@ -112,5 +138,5 @@ void IRDA_ISR(void)
 void IRDA_TIMER_ISR(void)
 {
 	Irda_Time++;
-	SetIrdaPeriod((GetTimerBRate(IRDA_TIMERB)+IRDA_TIMER_PERIOD)%GetTimerBRate(TIMERB0));
+	
 }
