@@ -32,9 +32,9 @@ void Delay(unsigned long num)
  ****************************************************/
 int main( void )
 {
-	uchar dir[4] = {dirFORWARD, dirROLLBACK, dirLEFT, dirRIGHT};
+	uchar dir[4] = {dirFRONT, dirBACK, dirLEFT, dirRIGHT};
 	uchar indDir = 0;
-	uchar second_count = 0;
+	//uchar second_count = 0;
 	//Stop watchdog timer to prevent time out reset 
 	WDTCTL = WDTPW + WDTHOLD;
 	
@@ -52,7 +52,7 @@ int main( void )
 					indDir = 0;
 				SetMotorDirs(dir[indDir]);
 				SetMotorRate(GetRandomNum()%3, GetRandomNum()%32);
-				second_count = 0;
+				//second_count = 0;
 			//}
 			SystemFlag	&= ~bSECOND;
 		}

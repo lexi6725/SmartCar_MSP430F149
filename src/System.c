@@ -9,7 +9,7 @@
 #include "motor.h"
 #include "irda.h"
 
-uint SystemFlag = 0;
+uint SystemFlag = 0;      // 系统标志
 
 /****************************************************
  * 函数名：Init_clk
@@ -19,13 +19,16 @@ uint SystemFlag = 0;
  ****************************************************/
 void Init_clk(void)
 {
-	BCSCTL1	&= ~XT2OFF;			// 打开XT2振荡噿	BCSCTL2	|= SELM1+SELS+DIVS_3;		// MCLK丿MHz, SMCLK丿MHz
+	uchar i;
+	
+	BCSCTL1	&= ~XT2OFF;			// 打开XT2振荡器
 	
 	do{
-		IFG1 &= ~OFIFG;			// 清除振荡器错误标忿		for(i = 0; i < 100; ++i)
-			_NOP();				// 延时等待
+		IFG1 &= ~OFIFG;			// 清除振荡器错误标忿
+		for (i = 0xff; i>0; --i);	// 延时等待
 	}while((IFG1&OFIFG) != 0);	// 如果振荡器标志错误，则继续等徿	
-	IFG1 &= ~OFIFG;
+	
+	BCSCTL2	= SELM1 + SELS;	// MCLK and SMCLK Select XT2CLK	8MHz
 }
 
 /**********************************************************
@@ -35,14 +38,14 @@ void Init_clk(void)
  **********************************************************/
 void System_Init(void)
 {
-	Init_clk();
-	Motor_Init();
-	TimerB7_Init();
-	TimerA3_Init();
+	Init_clk();               // 初始化系统时钟
+	Motor_Init();             // 初始化电机
+	TimerB7_Init();           // 初始化定时器TimerB
+	TimerA3_Init();           // 初始化定时器TimerA3
 	
-	ENABLE_TIMERB0();
-	EnableMotor();
-	SetMotorDirs(dirFORWARD);
-	Init_Irda();
-	_EINT();
+	ENABLE_TIMERB0();         // 开启定时器TimerB0中断
+	EnableMotor();            // 使能电机            
+	SetMotorDirs(dirFRONT); // 设置电机初始方向
+	Init_Irda();              // 初始化红外
+	_EINT();                  // 使能总中断
 }

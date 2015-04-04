@@ -13,10 +13,17 @@ uint	TimerBRate[7] = {32, 0, 0, 0, 0, 0, 0};
 
 void SyncTimerB(void);
 
+/*
+* 函数名：TimerB7_Init
+* 参数：None
+* 返回值：None
+* 功能：初始化定时器B7
+*/
 void TimerB7_Init(void)
 {
+	SyncTimerB();			// Set TimerB7 Period
+	
 	/* TB1~TB3 TB6 To PWM Out Reset/Set */
-	SyncTimerB();
 	TBCCTL1 = OUTMOD_7;
 	TBCCTL2 = OUTMOD_7;
 	TBCCTL3 = OUTMOD_7;
@@ -35,6 +42,12 @@ void DisableTimerB(void)
 	TBCTL	= 0 | TBCLR;			// Disable Timer B
 }
 
+/*
+* 函数名：SyncTimerB
+* 参数：None
+* 返回值：None
+* 功能：同步定时器定时周期
+*/
 void SyncTimerB(void)
 {
 	TBCCR0 = TimerBRate[0];
@@ -46,6 +59,12 @@ void SyncTimerB(void)
 	TBCCR6 = TimerBRate[6];
 }
 
+/*
+* 函数名：SetIrdaPeriod
+* 参数：rate: 设置Irda定时
+* 返回值：None
+* 功能：为Irda模块提供设置定时时间
+*/
 void SetIrdaPeriod(unsigned int rate)
 {
 	TBCCR4	= rate;
@@ -62,6 +81,12 @@ void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate)
 	TimerBRate[TimerBctl] = Rate;
 }
 
+/*
+* 函数名：GetTimerBRate
+* 参数：TimerBctl：定时器Bx
+* 返回值：None
+* 功能：获取指定定时器的定时时间
+*/
 unsigned int GetTimerBRate(unsigned char TimerBctl)
 {
 	return TimerBRate[TimerBctl];
@@ -77,6 +102,7 @@ uchar TimerB0_ISR(void)
 {
 	uchar ret = 0;
 	
+        // TimerB定时周期为1ms, SIZE_1K是1m
 	if (++Second_count >= SIZE_1K)
 	{
 		SystemFlag	|= bSECOND;
@@ -84,11 +110,17 @@ uchar TimerB0_ISR(void)
 		ret = 1;
 	}
 	
-	SyncTimerB();
+	SyncTimerB();     // 在一个定时周期后更新定时器
 	
 	return ret;
 }
 
+/*
+* 函数名：GetRandomNum
+* 参数：None
+* 返回值：None
+* 功能：获取一个随机数
+*/
 uint GetRandomNum(void)
 {
 	uint random = TBR;
@@ -107,7 +139,12 @@ uchar TimerB1_ISR(void)
 	return 0;
 }
 
-
+/*
+* 函数名：TimerA3_Init
+* 参数：None
+* 返回值：None
+* 功能：初始化TimerA3
+*/
 void TimerA3_Init(void)
 {
 	TACTL	|= TASSEL_2 + MC_2 + ID_3;

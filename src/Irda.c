@@ -16,9 +16,9 @@ uchar Irda_Code[4];
 
 void Init_Irda(void)
 {
-	P1DIR	&= ~IRDA;
-	P1IE	|= IRDA;
-	ENABLE_IRDA();
+	P1DIR	&= ~IRDA;		// 输入方向
+	P1IES	|= IRDA;		// 下降沿触发中断
+	ENABLE_IRDA();			// 打开中断
 
 	SetTimerBRate(IRDA_TIMERB, 2);
 	ENABLE_TIMERB4();
@@ -60,26 +60,34 @@ void Irda_Process(void)
 
 	switch(Irda_Code[2])
 	{
-		case LEFT_ROTATE:
+		case DIGIT_4:
 			SetMotorDirs(dirLEFT);
+			SyncMotorRate(dirLEFT);
 			break;
-		case LEFT_FORWARD:
-		case FORWARD_ROTATE:
-		case RIGHT_FORWARD:
-			SetMotorDirs(dirFORWARD);
+		case DIGIT_1:
+		case DIGIT_2:
+		case DIGIT_3:
+			SetMotorDirs(dirLEFT);
+			SyncMotorRate(dirLEFT);
 			break;
-		case LEFT_ROLLBACK:
-		case ROLLBACK_ROTATE:
-		case RIGHT_ROLLBACK:
-			SetMotorDirs(dirROLLBACK);
+		case DIGIT_7:
+		case DIGIT_8:
+		case DIGIT_9:
+			SetMotorDirs(dirBACK);
+			SyncMotorRate(dirBACK);
 			break;
-		case RIGHT_ROTATE:
+		case DIGIT_6:
 			SetMotorDirs(dirRIGHT);
+			SyncMotorRate(dirRIGHT);
+			break;
+		case DIGIT_5:
+			SetMotorDirs(dirDEBOOST);
+			SyncMotorRate(dirDEBOOST);
 			break;
 		default:
 			break;
 	}
-	SyncMotorRate(Irda_Code[2]);
+	
 	Irda_Flag	&= ~IRDA_OK;
 }
 

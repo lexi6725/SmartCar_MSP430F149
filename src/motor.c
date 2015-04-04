@@ -27,7 +27,8 @@ void Motor_Init(void)
  * 函数名：EnableMotor
  * 参数：None
  * 返回值：None
- * 功能：设置Motor速率，启动电朿 **************************************************/
+ * 功能：设置Motor速率，启动电机
+**************************************************/
 void EnableMotor(void)
 {	
 	P4SEL	|= BIT1+BIT2+BIT3+BIT6;
@@ -48,7 +49,7 @@ void DisableMoter(void)
 
 /**************************************************
  * 函数名：SetMotorRate
- * 参数：motorctl: 控制的电机，rate：速率
+ * 参数：motorctl: 0,所有电机; 1，左方电机;2，右方电机   rate：速率
  * 返回值：None
  * 功能：设置电机速率
  **************************************************/
@@ -57,25 +58,31 @@ void SetMotorRate(uchar motorctl, uint rate)
 	if (rate <= 0 && rate > MAXRATE && motorctl > 2)
 		return;
 	
-	if (motorctl == 0)
+	if (motorctl == 0)            // 所有电机
 	{
 		SetTimerBRate(MOTOR_LF, rate);
 		SetTimerBRate(MOTOR_LB, rate);
 		SetTimerBRate(MOTOR_RF, rate);
 		SetTimerBRate(MOTOR_RB, rate);
 	}
-	else if (motorctl == 1)
+	else if (motorctl == 1)     // 左侧电机
 	{
 		SetTimerBRate(MOTOR_LF, rate);
 		SetTimerBRate(MOTOR_LB, rate);
 	}
-	else if (motorctl == 2)
+	else if (motorctl == 2)   // 右侧电机
 	{
 		SetTimerBRate(MOTOR_RF, rate);
 		SetTimerBRate(MOTOR_RB, rate);
 	}
 }
 
+/*
+* 函数名：GetMaxRateCtl
+* 参数：None
+* 反回值：最大电机下标
+* 功能：获取最大速度电机的下标
+*/
 unsigned char GetMaxRateCtl(void)
 {
 	uchar i, ctl;
@@ -100,19 +107,25 @@ void SetMotorDirs(uchar dir)
 	P2OUT	= Directs[dir];
 }
 
+/*
+* 函数名：SyncMotorRate
+* 参数：type: 电机方向
+* 返回值：None
+* 功能：使电机达到特定的运行模式速度
+*/
 void SyncMotorRate(uchar type)
 {
 	uchar max_rate_ctl = GetMaxRateCtl();
-	if (type == LEFT_ROTATE || type == RIGHT_ROTATE || type == FORWARD_ROTATE || type == ROLLBACK_ROTATE)
+	if (type == dirFRONT|| type == dirBACK|| type == dirLEFT|| type == dirRIGHT || type == dirDEBOOST)
 		SetMotorRate(MOTOR_ALL, GetTimerBRate(max_rate_ctl));
-	else if (type == LEFT_FORWARD || type == LEFT_ROLLBACK)
+	else if (type == dirLEFTFRONT|| type == dirLEFTBACK)
 	{
 		SetMotorRate(1, 0);
 		SetMotorRate(2, GetTimerBRate(max_rate_ctl));
 	}
-	else if (type == RIGHT_FORWARD || type == RIGHT_ROLLBACK)
+	else if (type == dirRIGHTFRONT|| type == dirRIGHTBACK)
 	{
 		SetMotorRate(1, GetTimerBRate(max_rate_ctl));
 		SetMotorRate(2, 0);
-	}		
+	}
 }

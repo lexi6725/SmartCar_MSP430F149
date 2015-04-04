@@ -15,12 +15,20 @@
 
 #define MAXMOTORNUM		4
 
-// 电机方向定义
-#define dirDEBOOST		0x00
-#define dirFORWARD		0x01
-#define dirROLLBACK		0x02
-#define dirLEFT			0x03
-#define	dirRIGHT		0x04
+/* 电机方向定义*/
+#define dirDEBOOST		0
+
+// 左转,右转,前进电机都往前转
+#define dirFRONT		1
+#define dirLEFTFRONT	1
+#define dirRIGHTFRONT	1
+// 左退,右退,后退电机都往后转
+#define dirBACK			2
+#define dirLEFTBACK		2
+#define dirRIGHTBACK		2
+// 左自转,右自转电机方向相反
+#define dirLEFT			3
+#define	dirRIGHT		4
 
 #define MAXRATE		31
 
