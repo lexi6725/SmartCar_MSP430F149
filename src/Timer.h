@@ -44,8 +44,8 @@ struct Timer {
 	uchar	chksum;
 };
 
-#define	MS_MAX_TIMERS		16
-#define	US_MAX_TIMERS		16
+#define	MS_MAX_TIMERS		8
+#define	US_MAX_TIMERS		8
 
 /* Struct Timer's flag defined*/
 #define TIMER_RUN		0x1A
