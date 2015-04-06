@@ -8,6 +8,8 @@
 #include "Timer.h"
 #include "motor.h"
 #include "irda.h"
+#include "rtc.h"
+#include "HC-SR04.h"
 
 uint SystemFlag = 0;      // 系统标志
 
@@ -38,24 +40,29 @@ void Init_clk(void)
  **********************************************************/
 void System_Init(void)
 {
-	Init_clk();               // 初始化系统时钟
-	Motor_Init();             // 初始化电机
-	TimerB7_Init();           // 初始化定时器TimerB
-	TimerA3_Init();           // 初始化定时器TimerA3
+	Init_clk();               	// 初始化系统时钟
+	Motor_Init();             	// 初始化电机
+	TimerB7_Init();           	// 初始化定时器TimerB
+	TimerA3_Init();           	// 初始化定时器TimerA3
 	
-	ENABLE_TIMERB0();         // 开启定时器TimerB0中断
-	EnableMotor();            // 使能电机            
-	SetMotorDirs(dirFRONT); // 设置电机初始方向
-	Init_Irda();              // 初始化红外
-	_EINT();                  // 使能总中断
+	ENABLE_TIMERB0();         	// 开启定时器TimerB0中断
+	EnableMotor();            	// 使能电机            
+	SetMotorDirs(dirFRONT); 	// 设置电机初始方向
+	//SetMotorRate(MOTOR_ALL, 10);
+	Init_Irda();              	// 初始化红外
+	Init_RTC();
+	Init_hc_sr04();
+	Enable_hc_test();
+	_EINT();                  	// 使能总中断
 }
 
 
 uchar CalCheckSum(uchar *pdat, uchar len)
 {
 	uchar chksum = 0;
-	while(len--)
-		chksum += pdat[len];
+	do{
+		chksum += pdat[--len];
+	}while(len);
 
 	chksum	+= 0x5A;
 	return chksum;

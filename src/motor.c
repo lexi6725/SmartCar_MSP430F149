@@ -8,9 +8,14 @@
 #include "motor.h"
 #include "Timer.h"
 #include "Irda.h"
+#include "System.h"
+#include "HC-SR04.h"
 
 const uchar Directs[5] = {0x00, 0xAA, 0x55, 0xA5, 0x5A};
 const uchar Motors[4] = {MOTOR_LF, MOTOR_LB, MOTOR_RF, MOTOR_RB};
+static struct Timer *timer;
+static uchar motor_flag;
+
 /**************************************************
  * Init_Motor
  * 参数：None
@@ -21,6 +26,12 @@ void Motor_Init(void)
 	// P4.1 P4.2 P4.3 P4.6: PWM脉冲输出，控制电机速度
 	P4DIR	|= BIT1+BIT2+BIT3+BIT6;
 	P2DIR	|= 0xff;
+
+	timer = GetEmptyTimePoint(TIMER_TYPE_MS);
+	timer->flag	= TIMER_STOP;
+	timer->period = 55;
+	timer->timer_isr = Motor_Status_Update;
+	motor_flag = 0;
 }
 
 /**************************************************
@@ -33,6 +44,7 @@ void EnableMotor(void)
 {	
 	P4SEL	|= BIT1+BIT2+BIT3+BIT6;
 	P4DIR	|= BIT1+BIT2+BIT3+BIT6;
+	StartTimer(timer);
 }
 
 /**************************************************
@@ -127,5 +139,22 @@ void SyncMotorRate(uchar type)
 	{
 		SetMotorRate(1, GetTimerBRate(max_rate_ctl));
 		SetMotorRate(2, 0);
+	}
+}
+
+void Motor_Status_Update(void)
+{
+	uint ins = hc_get_instance();
+	if (ins < 10)
+	{
+		SetMotorDirs(dirLEFT);
+		SyncMotorRate(dirLEFT);
+		motor_flag	|= bDIR;
+	}
+	else
+	{
+		SetMotorDirs(dirFRONT);
+		SyncMotorRate(dirFRONT);
+		motor_flag &= ~bDIR;
 	}
 }

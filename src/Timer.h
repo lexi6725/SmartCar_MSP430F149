@@ -45,7 +45,7 @@ struct Timer {
 };
 
 #define	MS_MAX_TIMERS		8
-#define	US_MAX_TIMERS		8
+#define	US_MAX_TIMERS		4
 
 /* Struct Timer's flag defined*/
 #define TIMER_RUN		0x1A

@@ -32,6 +32,11 @@
 
 #define MAXRATE		31
 
+/* motor_Flag bits*/
+#define bDIR		(1<<0)
+#define bFRONT		(1<<1)
+#define bBACK		(1<<2)
+
 struct Direct{
 	int		x;
 	int		y;
@@ -52,4 +57,5 @@ extern void DisableMoter(void);
 extern void SetMotorRate(uchar motorctl, uint rate);
 extern void SetMotorDirs(uchar dir);
 extern void SyncMotorRate(uchar type);
+extern void Motor_Status_Update(void);
 #endif

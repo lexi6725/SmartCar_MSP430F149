@@ -23,7 +23,6 @@ void Init_Irda_Timer(void)
 		timer->flag = TIMER_STOP;
 		timer->period = 128;
 		timer->timer_isr = IRDA_TIMER_ISR;
-		timer->chksum = CalCheckSum((uchar *)timer, sizeof(struct Timer)-1);
 	}
 }
 

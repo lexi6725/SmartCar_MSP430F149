@@ -9,7 +9,6 @@
 #include "System.h"
 #include "irda.h"
 
-ulong	Second_count = 0;
 uint	TimerBRate[7] = {32, 0, 0, 0, 0, 0, 0};
 
 static struct Timer ms_timer[MS_MAX_TIMERS];
@@ -121,10 +120,7 @@ void UpdateTimer(uchar type)
 	uchar	index;
 	
 	for (index = 0; index < count; ++index)
-	{
-		if (timer->chksum != CalCheckSum((uchar *)timer, sizeof(struct Timer)-1))
-			memset((uchar*)timer, 0, sizeof(struct Timer));
-		
+	{	
 		if (timer->flag == TIMER_RUN)
 		{
 			if (--timer->count == 0)
@@ -132,7 +128,6 @@ void UpdateTimer(uchar type)
 				timer->timer_isr();
 				timer->count= timer->period;
 			}
-			timer->chksum = CalCheckSum((uchar*)timer, sizeof(struct Timer)-1);
 		}
 		timer++;
 	}	
@@ -150,34 +145,11 @@ struct Timer* GetEmptyTimePoint(uchar type)
 		{
 			return timer;
 		}
+		timer++;
 	}
 
 	return NULL;
 }
-
-/*signed char AddTimer(struct Timer *t, uchar type)
-{
-	uchar index;
-	struct Timer *timer = GetTimerType(type);
-	uchar count = GetTimerMaxNum(type);
-
-	for (index = 0; index < count; ++index)
-	{
-		if (timer->flag == NO_USE_TIMER)
-		{
-			timer->flag = t->flag;
-			timer->count = t->period;
-			timer->period = t->period;
-			timer->timer_isr = t->timer_isr;
-			timer->chksum = CalCheckSum((uchar *)timer,sizeof(struct Timer)-1);
-			if (type)
-				return index|0x40;
-			return index;
-		}
-	}
-
-	return -ERR_NO_TIMER;
-}*/
 
 void DelTimer(struct Timer * timer)
 {
@@ -187,37 +159,20 @@ void DelTimer(struct Timer * timer)
 
 void StartTimer(struct Timer *timer)
 {
-	if (timer == NULL)
+	if (timer == NULL && timer->flag == NO_USE_TIMER)
 		return;
 	
-	if (timer->chksum != CalCheckSum((uchar *)timer, sizeof(struct Timer)-1))
-	{
-		memset((uchar *)timer, 0, sizeof(struct Timer));
-		timer = NULL;
-	}
-	else
-	{
 		timer->flag = TIMER_RUN;
 		timer->count = timer->period;
-		timer->chksum = CalCheckSum((uchar *)timer, sizeof(struct Timer)-1);
-	}
+		
 }
 
 void StopTimer(struct Timer *timer)
 {
-	if (timer == NULL)
+	if (timer == NULL && timer->flag == NO_USE_TIMER)
 		return;
 
-	if (timer->chksum == CalCheckSum((uchar *)timer,sizeof(struct Timer)-1))
-	{
-		timer->flag = TIMER_STOP;
-		timer->chksum = CalCheckSum((uchar *)timer, sizeof(struct Timer)-1);
-	}
-	else
-	{
-		memset((uchar*)timer, 0, sizeof(struct Timer));
-		timer = NULL;
-	}
+	timer->flag = TIMER_STOP;
 }
 
 /**************************************************
@@ -240,9 +195,8 @@ void TimerB0_ISR(void)
 * 功能：获取一个随机数
 */
 uint GetRandomNum(void)
-{
-	uint random = TBR;
-	
+{	
+	uint	random = TBR;
 	return random+TAR;
 }
 
@@ -268,8 +222,9 @@ void TimerB1_ISR(void)
 */
 void TimerA3_Init(void)
 {
-	TACTL	|= TASSEL_2 + MC_2 + ID_3;		// SMCLK, Continue Mode, DIV:8
-	
+	TACTL	|= TASSEL_2 + MC_1 + ID_3 + TACLR;		// SMCLK, Up Mode, DIV:8
+	TACCR0	= 50;
+	TACCTL0	|= CCIE;
 	memset((uchar *)&us_timer[0], 0, sizeof(us_timer));
 }
 
