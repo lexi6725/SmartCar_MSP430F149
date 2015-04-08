@@ -15,6 +15,7 @@
 #define		MODULE_PWM			// PWM电机驱动模块
 #define		MODULE_TIMER		// 定时器模块
 #define		MODULE_SR04			//超声波模块
+#define		MODULE_NRF24L01
 
 #define		SIZE_1K		(1<<10)
 #define		SIZE_1M		(1<<20)

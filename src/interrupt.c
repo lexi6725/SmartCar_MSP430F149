@@ -44,8 +44,8 @@ __interrupt void ISR_TimerA(void)
 	TimerA_ISR();
 }
 
-#pragma vector=UART0RX_VECTOR
-__interrupt void ISR_SPI0(void)
+#pragma vector=UART1RX_VECTOR
+__interrupt void ISR_SPI1(void)
 {
 	SPI_RXD_ISR();
 }

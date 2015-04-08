@@ -11,6 +11,7 @@
 #define bSystemOK	(1<<0)
 #define bPWMRUN		(1<<1)
 #define bSECOND		(1<<2)
+#define bNRF24L01	(1<<3)
 
 extern uint SystemFlag;
 

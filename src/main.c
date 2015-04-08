@@ -60,7 +60,7 @@ int main( void )
 			RTC_Flag	&= ~bSecond;
 		}
 
-		Irda_Process();
+		//Irda_Process();
 		
 		//LPM0;
 	}

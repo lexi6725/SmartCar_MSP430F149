@@ -10,6 +10,9 @@
 #include "irda.h"
 #include "rtc.h"
 #include "HC-SR04.h"
+#include "nRF24L01.h"
+#include "System.h"
+#include "spi.h"
 
 uint SystemFlag = 0;      // 系统标志
 
@@ -45,15 +48,26 @@ void System_Init(void)
 	TimerB7_Init();           	// 初始化定时器TimerB
 	TimerA3_Init();           	// 初始化定时器TimerA3
 	
-	ENABLE_TIMERB0();         	// 开启定时器TimerB0中断
-	EnableMotor();            	// 使能电机            
-	SetMotorDirs(dirFRONT); 	// 设置电机初始方向
-	//SetMotorRate(MOTOR_ALL, 10);
 	Init_Irda();              	// 初始化红外
 	Init_RTC();
 	Init_hc_sr04();
-	Enable_hc_test();
+	SPIx_Init();
 	_EINT();                  	// 使能总中断
+	
+	ENABLE_TIMERB0();         	// 开启定时器TimerB0中断
+	EnableMotor();            	// 使能电机            
+	SetMotorDirs(dirBACK); 	// 设置电机初始方向
+	//SetMotorRate(MOTOR_ALL, 10);
+	Enable_hc_test();
+
+	NRF24L01_Init();
+	if (nRF24L01_Check())
+	{
+		SystemFlag	|= bNRF24L01;
+	}
+	else
+		SystemFlag	&= bNRF24L01;
+	
 }
 
 
