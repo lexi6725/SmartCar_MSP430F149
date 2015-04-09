@@ -12,8 +12,12 @@ uchar Rtx_ctrl;
 
 void SPIx_Init(void)
 {
+	SPI_MISO_FUN();
+	SPI_MOSI_FUN();
+	SPI_SCK_FUN();
+	
 	U1CTL	= CHAR + SYNC + MM + SWRST;
-	U1TCTL	= SSEL1 + STC;
+	U1TCTL	= CKPL + SSEL1 + STC;
 	U1BR0 	= 0x02;
 	U1BR1	= 0x00;
 	U1MCTL	= 0x00;
@@ -21,9 +25,6 @@ void SPIx_Init(void)
 	U1CTL	&= ~SWRST;
 	IE2		|= URXIE1;
 
-	SPI_MISO_FUN();
-	SPI_MOSI_FUN();
-	SPI_SCK_FUN();
 }
 
 uchar SPIx_RW_Byte(uchar Byte)
@@ -44,8 +45,6 @@ uchar SPIx_RW_Byte(uchar Byte)
 
 void SPI_RXD_ISR(void)
 {
+	Rtx_Buf[0]	= RXBUF_1;
 	SPI_Flag	|= RECEIVED;
 }
-
-
-

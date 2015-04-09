@@ -17,10 +17,10 @@
 
 #define SPI_SCK_OUT()	(P5DIR	|= BIT3)
 #define SPI_SCK_FUN()	(P5SEL	|= BIT3)
-#define SPI_MOSI_OUT()	(P5DIR	|= BIT2)
-#define SPI_MOSI_FUN()	(P5SEL	|= BIT2)
-#define SPI_MISO_IN()	(P5DIR	&= ~BIT1)
-#define SPI_MISO_FUN()	(P5SEL	&= ~BIT1)
+#define SPI_MOSI_OUT()	(P5DIR	|= BIT1)
+#define SPI_MOSI_FUN()	(P5SEL	|= BIT1)
+#define SPI_MISO_IN()	(P5DIR	&= ~BIT2)
+#define SPI_MISO_FUN()	(P5SEL	|= BIT2)
 
 extern uchar SPI_Flag;
 #define RECEIVED	0x1
