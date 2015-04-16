@@ -16,9 +16,13 @@
 #define IRDA_TIMER_PERIOD	4
 #define IRDA_TIMERB			TIMERB4
 
-#define IRDA_RECV			(1<<0)
-#define IRDA_OK				(1<<1)
-#define IRDA_START_TIMER	(1<<2)
+#define IRDA_START			(1<<0)
+#define IRDA_LOW			(1<<1)
+#define IRDA_Dat_OK			(1<<2)
+#define IRDA_COMMUNICATING	(1<<3)
+
+#define HEADERTIME			35
+#define DATA_HIGH			10
 
 #define CH_REDUCE		0x45
 #define CH_DEFAULT		0x46

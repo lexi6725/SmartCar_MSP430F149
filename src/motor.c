@@ -42,8 +42,8 @@ void Motor_Init(void)
 **************************************************/
 void EnableMotor(void)
 {	
-	P4SEL	|= BIT1+BIT2+BIT3+BIT6;
 	P4DIR	|= BIT1+BIT2+BIT3+BIT6;
+	P4SEL	|= BIT1+BIT2+BIT3+BIT6;
 	StartTimer(timer);
 }
 

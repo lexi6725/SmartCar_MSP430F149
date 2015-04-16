@@ -44,11 +44,11 @@ __interrupt void ISR_TimerA(void)
 	TimerA_ISR();
 }
 
-#pragma vector=UART1RX_VECTOR
-__interrupt void ISR_SPI1(void)
-{
-	SPI_RXD_ISR();
-}
+//#pragma vector=UART1RX_VECTOR
+//__interrupt void ISR_SPI1(void)
+//{
+//	SPI_RXD_ISR();
+//}
 
 #pragma vector=PORT1_VECTOR
 __interrupt void ISR_PORT1(void)
@@ -57,9 +57,9 @@ __interrupt void ISR_PORT1(void)
 	{
 		hc_sr04_echo_ISR();
 	}
-	if (CHECK_IRDA())
+	/*if (CHECK_IRDA())
 	{
 		IRDA_ISR();
 		CLR_IRDA_FLG();
-	}
+	}*/
 }

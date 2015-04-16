@@ -7,32 +7,71 @@
 
 #include "config.h"
 #include "nRF24L01.h"
-#include "spi.h"
+//#include "spi.h"
 #ifdef MODULE_NRF24L01
 
 uchar nRF24L01_Status = 0;
+uchar TestBuf = 0;
 
 uchar TX_ADDRESS[TX_ADR_WIDTH] = {0x59, 0x42, 0x67, 0x67, 0x92};
 uchar RX_ADDRESS[RX_ADR_WIDTH] = {0x59, 0x42, 0x67, 0x67, 0x92};
 
-
-/*
-* nRF24L01初始化
-*/
-void NRF24L01_Init(void)
+void delay_1ms(unsigned int i)
 {
-	nRF24L01_CE_OUT();
-	nRF24L01_CSN_OUT();
+	unsigned long j;
+	for(;i>0;i--)
+	{
+		for(j=0;j<730;j++);//8M--->1ms
+	}
+}
 
-	nRF24L01_CE_0;
+
+void nRF24L01_IO_set(void)
+{
+      P4DIR |= BIT4;         //ce
+      P4DIR |= BIT5;         //csn
+      P5DIR |= BIT3;         //sck
+      P5DIR |= BIT2;         //mosi out
+      P5DIR &=~BIT1;         //MISO IN 
+      P1DIR &=~BIT4;         //IRQ
+      
+      nRF24L01_SCK_0;
+      nRF24L01_CE_0;
+}
+
+void MOSI_Pin(BYTE state)
+{
+	if (state)
+		nRF24L01_MOSI_1;
+	else
+		nRF24L01_MOSI_0;
+}
+BYTE MISO_Pin(void)
+{
+	return nRF24L01_MISO_IN;
+}
+
+uchar SPI_RW(uchar byte)
+{
+	uchar bit_ctr;
+
+	for (bit_ctr = 0; bit_ctr<8; bit_ctr++)
+	{
+		MOSI_Pin(byte&0x80);
+		byte = (byte<<1);
+		nRF24L01_SCK_1;
+		byte	|= MISO_Pin();
+		nRF24L01_SCK_0;
+	}
+	return byte;
 }
 
 uchar nRF24L01_RW_Reg(uchar reg, uchar value)
 {
 	uchar status;
 	nRF24L01_CSN_0;
-	status = SPIx_RW_Byte(reg);
-	SPIx_RW_Byte(value);
+	status = SPI_RW(reg);
+	SPI_RW(value);
 	nRF24L01_CSN_1;
 
 	return status;
@@ -42,8 +81,8 @@ uchar nRF24L01_Read_Byte(uchar reg)
 {
 	uchar ret_value;
 	nRF24L01_CSN_0;
-	SPIx_RW_Byte(reg);
-	ret_value = SPIx_RW_Byte(0);
+	SPI_RW(reg);
+	ret_value = SPI_RW(0);
 	nRF24L01_CSN_1;
 
 	return ret_value;
@@ -54,10 +93,10 @@ uchar nRF24L01_Read_Buf(uchar reg, uchar *pBuf, uchar len)
 	uchar status, byte_ctr;
 
 	nRF24L01_CSN_0;
-	status = SPIx_RW_Byte(reg);
+	status = SPI_RW(reg);
 
 	for (byte_ctr = 0; byte_ctr<len; byte_ctr++)
-		pBuf[byte_ctr] = SPIx_RW_Byte(0);
+		pBuf[byte_ctr] = SPI_RW(0);
 
 	nRF24L01_CSN_1;
 
@@ -69,9 +108,9 @@ uchar nRF24L01_Write_Buf(uchar reg, uchar *pBuf, uchar len)
 	uchar status, byte_ctr;
 
 	nRF24L01_CSN_0;
-	status = SPIx_RW_Byte(reg);
+	status = SPI_RW(reg);
 	for(byte_ctr = 0; byte_ctr<len; ++byte_ctr)
-		SPIx_RW_Byte(*pBuf++);
+		SPI_RW(*pBuf++);
 	nRF24L01_CSN_1;
 	
 	return status;
@@ -140,5 +179,19 @@ uchar nRF24L01_Check(void)
 		return 0;
 	else
 		return 1;
+}
+
+/*
+* nRF24L01初始化
+*/
+void NRF24L01_Init(uchar Mode)
+{
+	TestBuf = nRF24L01_Read_Byte(RX_ADDR_P4);	//return is 0xC5,if connection is ok
+
+	if (Mode == nRF_TX_Mode)
+		TX_Mode();
+	else
+		RX_Mode();
+	delay_1ms(2);
 }
 #endif

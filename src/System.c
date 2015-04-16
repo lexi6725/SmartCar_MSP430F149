@@ -12,7 +12,7 @@
 #include "HC-SR04.h"
 #include "nRF24L01.h"
 #include "System.h"
-#include "spi.h"
+//#include "spi.h"
 
 uint SystemFlag = 0;      // 系统标志
 
@@ -24,16 +24,16 @@ uint SystemFlag = 0;      // 系统标志
  ****************************************************/
 void Init_clk(void)
 {
-	uchar i;
+	volatile uchar i;
 	
 	BCSCTL1	&= ~XT2OFF;			// 打开XT2振荡器
 	
 	do{
 		IFG1 &= ~OFIFG;			// 清除振荡器错误标忿
 		for (i = 0xff; i>0; --i);	// 延时等待
-	}while((IFG1&OFIFG) != 0);	// 如果振荡器标志错误，则继续等徿	
+	}while(IFG1&OFIFG);	// 如果振荡器标志错误，则继续等徿	
 	
-	BCSCTL2	= SELM1 + SELS;	// MCLK and SMCLK Select XT2CLK	8MHz
+	BCSCTL2	= SELM_2 + SELS;	// MCLK and SMCLK Select XT2CLK	8MHz
 }
 
 /**********************************************************
@@ -51,7 +51,7 @@ void System_Init(void)
 	Init_Irda();              	// 初始化红外
 	Init_RTC();
 	Init_hc_sr04();
-	SPIx_Init();
+	//SPIx_Init();
 	_EINT();                  	// 使能总中断
 	
 	ENABLE_TIMERB0();         	// 开启定时器TimerB0中断
@@ -60,14 +60,10 @@ void System_Init(void)
 	//SetMotorRate(MOTOR_ALL, 10);
 	Enable_hc_test();
 
-	NRF24L01_Init();
-	if (nRF24L01_Check())
-	{
-		SystemFlag	|= bNRF24L01;
-	}
-	else
-		SystemFlag	&= bNRF24L01;
+	nRF24L01_IO_set();
 	
+	P5DIR	|= BIT4+BIT5+BIT6;
+	P5SEL	|= BIT4+BIT5+BIT6;
 }
 
 

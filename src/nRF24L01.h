@@ -70,10 +70,18 @@
 #define nRF24L01_CSN_1		(P4OUT	|= BIT5)	// 使能SPI片选信号
 #define nRF24L01_CE_0		(P4OUT	&= ~BIT4)	//取消NRF24L01片选信号
 #define nRF24L01_CSN_0		(P4OUT	&= ~BIT5)	//取消SPI片选信号
+#define nRF24L01_SCK_0		(P5OUT	&= ~BIT3)
+#define nRF24L01_SCK_1		(P5OUT	|= BIT3)
+#define nRF24L01_MOSI_0		(P5OUT	&= ~BIT2)
+#define nRF24L01_MOSI_1		(P5OUT	|= BIT2)
+#define nRF24L01_MISO_IN	((P5IN>>1)&0x01)
 
 #define nRF24L01_CE_OUT()	(P4DIR	|= BIT4)
 #define nRF24L01_CSN_OUT()	(P4DIR	|= BIT5)
 #define nRF24L01_IRQ_IN()	(P1DIR	&= ~BIT4)	
+#define nRF24L01_SCK_OUT()	(P5DIR	|= BIT3)
+#define nRF24L01_MOSI_OUT() (P5DIR	|= BIT2)
+#define nRF24L01_MISO_OUT()	(P5DIR	&= ~BIT1)
 
 ///===============REG setting data===============
 //===0x00 CONFIG===============
@@ -144,8 +152,11 @@
 #define RF_DR_1Mbps			0x00
 #define RF_DR_2Mbps			0x08
 
+#define nRF_TX_Mode		0x00
+#define nRF_RX_Mode		0x01
 
-extern void NRF24L01_Init(void);
+extern void nRF24L01_IO_set(void);
+extern void NRF24L01_Init(uchar Mode);
 extern uchar nRF24L01_Check(void);
 extern void RX_Mode(void);
 extern void TX_Mode(void);

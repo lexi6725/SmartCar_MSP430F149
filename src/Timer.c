@@ -223,7 +223,7 @@ void TimerB1_ISR(void)
 void TimerA3_Init(void)
 {
 	TACTL	|= TASSEL_2 + MC_1 + ID_3 + TACLR;		// SMCLK, Up Mode, DIV:8
-	TACCR0	= 50;
+	TACCR0	= 128;
 	TACCTL0	|= CCIE;
 	memset((uchar *)&us_timer[0], 0, sizeof(us_timer));
 }
