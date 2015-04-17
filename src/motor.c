@@ -65,7 +65,7 @@ void DisableMoter(void)
  * 返回值：None
  * 功能：设置电机速率
  **************************************************/
-void SetMotorRate(uchar motorctl, uint rate)
+void SetMotorRate(uchar motorctl, uchar rate)
 {
 	if (rate <= 0 && rate > MAXRATE && motorctl > 2)
 		return;
@@ -117,6 +117,7 @@ unsigned char GetMaxRateCtl(void)
 void SetMotorDirs(uchar dir)
 {
 	P2OUT	= Directs[dir];
+	SyncMotorRate(dir);
 }
 
 /*
@@ -157,4 +158,34 @@ void Motor_Status_Update(void)
 		SyncMotorRate(dirFRONT);
 		motor_flag &= ~bDIR;
 	}
+}
+
+uchar Get_Motor_Status(void)
+{
+	return motor_flag;
+}
+
+uchar Get_Motor_Rate(uchar *pdat, uchar motor_type)
+{
+	uint rate;
+	
+	if (motor_type == MOTOR_ALL)
+	{
+		rate = GetTimerBRate(MOTOR_LF);
+		memcpy(&pdat[0], &rate, 2);
+		rate = GetTimerBRate(MOTOR_LB);
+		memcpy(&pdat[2], &rate, 2);
+		rate = GetTimerBRate(MOTOR_RF);
+		memcpy(&pdat[4], &rate, 2);
+		rate = GetTimerBRate(MOTOR_RB);
+		memcpy(&pdat[6], &rate, 2);
+		return 8;
+	}
+	else
+	{
+		rate = GetTimerBRate(motor_type);
+		memcpy(&pdat[0], &rate, 2);
+		return 2;
+	}
+	return 0;
 }

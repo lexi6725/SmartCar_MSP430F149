@@ -155,11 +155,26 @@
 #define nRF_TX_Mode		0x00
 #define nRF_RX_Mode		0x01
 
+#define RF_IRQ_IS()		(P1IFG&BIT4)
+
+
+// Communicate Define
+#define HEAD1		0x00
+#define ADDR		HEAD1+1
+#define ALEN		0x02
+#define HEAD2		ADDR+ALEN
+#define CMD			HEAD2+1
+#define DLEN		CMD+1
+#define D_ID		DLEN+1
+#define DATA		D_ID+1
+
 extern void nRF24L01_IO_set(void);
 extern void NRF24L01_Init(uchar Mode);
 extern uchar nRF24L01_Check(void);
 extern void RX_Mode(void);
 extern void TX_Mode(void);
-extern uchar nRF24L01_Tx_Package(uchar *pbuf, uchar len);
-extern uchar nRF24L01_Rx_Package(uchar *pbuf, uchar len);
+//extern uchar nRF24L01_Tx_Package(uchar *pbuf, uchar len);
+//extern uchar nRF24L01_Rx_Package(uchar *pbuf, uchar len);
+extern void nRF24L01_ISR(void);
+extern void nRF24L01_Comm_Process(void);
 #endif

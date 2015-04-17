@@ -62,8 +62,14 @@ void System_Init(void)
 
 	nRF24L01_IO_set();
 	
-	P5DIR	|= BIT4+BIT5+BIT6;
-	P5SEL	|= BIT4+BIT5+BIT6;
+	if (nRF24L01_Check())
+	{
+		SystemFlag	|= bNRF_ENABLE;
+		NRF24L01_Init(nRF_RX_Mode);
+	}
+	
+	//P5DIR	|= BIT4+BIT5+BIT6;
+	//P5SEL	|= BIT4+BIT5+BIT6;
 }
 
 

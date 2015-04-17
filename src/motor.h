@@ -54,8 +54,10 @@ struct Motor {
 extern void Motor_Init(void);
 extern void EnableMotor(void);
 extern void DisableMoter(void);
-extern void SetMotorRate(uchar motorctl, uint rate);
+extern void SetMotorRate(uchar motorctl, uchar rate);
 extern void SetMotorDirs(uchar dir);
 extern void SyncMotorRate(uchar type);
 extern void Motor_Status_Update(void);
+extern uchar Get_Motor_Status(void);
+extern uchar Get_Motor_Rate(uchar *pdat, uchar motor_type);
 #endif

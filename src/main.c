@@ -48,19 +48,11 @@ int main( void )
 	{
 		if (RTC_Flag&bSecond)
 		{
-			if (nRF24L01_Check())
-			{
-				SystemFlag	|= bNRF24L01;
-			}
-			else
-				SystemFlag	&= bNRF24L01;
-				
-			if (SystemFlag&bNRF24L01)
-				NRF24L01_Init(nRF_TX_Mode);
 				
 			SetMotorDirs(dir[GetRandomNum()%4]);
 			SetMotorRate(MOTOR_ALL, GetRandomNum()%MAXRATE);
 			RTC_Flag	&= ~bSecond;
+			nRF24L01_Tx_Package(dir, 4);
 		}
 		
 		Irda_Process();

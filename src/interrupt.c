@@ -10,9 +10,9 @@
 #include "config.h"
 #include "interrupt.h"
 #include "timer.h"
-#include "spi.h"
 #include "irda.h"
 #include "HC-SR04.h"
+#include "nRF24L01.h"
 
 /****************************************************
  * ISR_Timer_B0
@@ -62,4 +62,9 @@ __interrupt void ISR_PORT1(void)
 		IRDA_ISR();
 		CLR_IRDA_FLG();
 	}*/
+
+	if (RF_IRQ_IS())
+	{
+		nRF24L01_ISR();
+	}
 }

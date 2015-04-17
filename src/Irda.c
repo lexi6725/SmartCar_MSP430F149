@@ -23,7 +23,7 @@ void Init_Irda_Timer(void)
 	if ((timer = GetEmptyTimePoint(TIMER_TYPE_US)) != NULL)
 	{
 		timer->flag = TIMER_STOP;
-		timer->period = 1;
+		timer->period = 4;
 		timer->timer_isr = IRDA_TIMER_ISR;
 	}
 }
@@ -76,27 +76,22 @@ void Irda_Process(void)
 	{
 		case DIGIT_4:
 			SetMotorDirs(dirLEFT);
-			SyncMotorRate(dirLEFT);
 			break;
 		case DIGIT_1:
 		case DIGIT_2:
 		case DIGIT_3:
 			SetMotorDirs(dirLEFT);
-			SyncMotorRate(dirLEFT);
 			break;
 		case DIGIT_7:
 		case DIGIT_8:
 		case DIGIT_9:
 			SetMotorDirs(dirBACK);
-			SyncMotorRate(dirBACK);
 			break;
 		case DIGIT_6:
 			SetMotorDirs(dirRIGHT);
-			SyncMotorRate(dirRIGHT);
 			break;
 		case DIGIT_5:
 			SetMotorDirs(dirDEBOOST);
-			SyncMotorRate(dirDEBOOST);
 			break;
 		default:
 			break;
