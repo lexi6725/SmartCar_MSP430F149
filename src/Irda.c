@@ -10,6 +10,7 @@
 #include "motor.h"
 #include "System.h"
 
+#if defined(MODULE_IRDA)
 uchar Irda_Flag;
 uchar Irda_Time;
 uchar Irda_Code[4];
@@ -179,3 +180,4 @@ void IRDA_TIMER_ISR(void)
 		Irda_Time = 0;
 	}
 }
+#endif

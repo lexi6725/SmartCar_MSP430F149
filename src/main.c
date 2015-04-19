@@ -54,8 +54,10 @@ int main( void )
 			RTC_Flag	&= ~bSecond;
 			nRF24L01_Tx_Package(dir, 4);
 		}
-		
+
+		#if defined(MODULE_IRDA)
 		Irda_Process();
+		#endif
 	}
 }
  

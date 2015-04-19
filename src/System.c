@@ -47,8 +47,11 @@ void System_Init(void)
 	Motor_Init();             	// 初始化电机
 	TimerB7_Init();           	// 初始化定时器TimerB
 	TimerA3_Init();           	// 初始化定时器TimerA3
-	
+
+	#if defined(MODULE_IRDA)
 	Init_Irda();              	// 初始化红外
+	#endif
+	
 	Init_RTC();
 	Init_hc_sr04();
 	//SPIx_Init();

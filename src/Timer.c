@@ -208,10 +208,12 @@ uint GetRandomNum(void)
  **************************************************/
 void TimerB1_ISR(void)
 {
+	#if defined(MODULE_IRDA)
 	if (TBIV&0x08)
 	{
 	  IRDA_TIMER_ISR();
 	}
+	#endif
 }
 
 /*
