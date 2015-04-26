@@ -11,8 +11,7 @@
 
 uint	TimerBRate[7] = {32, 0, 0, 0, 0, 0, 0};
 
-static struct Timer ms_timer[MS_MAX_TIMERS];
-static struct Timer us_timer[US_MAX_TIMERS];
+static struct Timer *timer = NULL;
 
 void SyncTimerB(void);
 
@@ -33,7 +32,6 @@ void TimerB7_Init(void)
 	TBCCTL6 = OUTMOD_7;
 	TBCTL |= TASSEL_1 + TBCLR + MC_1;		// ACLK + Up Mode
 
-	memset((uchar *)&ms_timer[0], 0, sizeof(ms_timer));
 }
 
 /**************************************************
@@ -97,82 +95,82 @@ unsigned int GetTimerBRate(unsigned char TimerBctl)
 	return TimerBRate[TimerBctl];
 }
 
-struct Timer* GetTimerType(uchar type)
-{
-	if (type)
-		return us_timer;
-	
-	return ms_timer;
-}
-
-uchar GetTimerMaxNum(uchar type)
-{
-	if (type)
-		return US_MAX_TIMERS;
-
-	return MS_MAX_TIMERS;
-}
-
 void UpdateTimer(uchar type)
 {
-	struct Timer *timer = GetTimerType(type);
-	uchar	count = GetTimerMaxNum(type);
-	uchar	index;
+	struct Timer *t = timer;
 	
-	for (index = 0; index < count; ++index)
-	{	
-		if (timer->flag == TIMER_RUN)
+	while(t != NULL)
+	{
+		if (t->tmr_type == type)
 		{
-			if (--timer->count == 0)
+			if (t->tmr_state == TMR_STATE_RUNNING)
 			{
-				timer->timer_isr();
-				timer->count= timer->period;
+				if (t->tmr_count++ == t->tmr_period)
+				{
+					t->tmr_isr();
+					if (t->tmr_opt == TMR_OPT_ONE_SHOT)
+					{
+						t->tmr_state = TMR_STATE_STOPPED;
+					}
+					if (t->tmr_opt == TMR_OPT_PERIODIC)
+					{
+						t->tmr_count = 0;
+					}
+				}
 			}
 		}
-		timer++;
-	}	
-}
-
-struct Timer* GetEmptyTimePoint(uchar type)
-{
-	uchar index;
-	struct Timer *timer = GetTimerType(type);
-	uchar num = GetTimerMaxNum(type);
-
-	for (index = 0; index < num; ++index)
-	{
-		if (timer->flag == NO_USE_TIMER)
-		{
-			return timer;
-		}
-		timer++;
+		t = t->next;
 	}
-
-	return NULL;
-}
-
-void DelTimer(struct Timer * timer)
-{
-	if (timer != NULL)
-		memset((uchar*)timer, 0, sizeof(struct Timer));
-}
-
-void StartTimer(struct Timer *timer)
-{
-	if (timer == NULL && timer->flag == NO_USE_TIMER)
-		return;
 	
-		timer->flag = TIMER_RUN;
-		timer->count = timer->period;
-		
+}
+
+void AddTimer(struct Timer *t)
+{
+	_DINT();
+	if (timer == NULL)
+	{
+		timer = t;
+		t->tmr_prev = NULL;
+		t->next = NULL;
+	}
+	else
+	{
+		timer->tmr_next = t;
+		t->tmr_prev = timer;
+		t->tmr_next = timer->tmr_next;
+	}
+	_EINT();
+}
+
+void DelTimer(struct Timer * t)
+{
+	_DINT():
+	if (timer == t)
+	{
+		timer = t->tmr_next;
+		t->tmr_next->tmr_prev = timer;
+	}
+	else
+	{
+		t->tmr_prev->tmr_next = t->tmr_next;
+		t->tmr_next->tmr_prev = t->tmr_prev;
+	}
+	t->tmr_next = NULL;
+	t->tmr_prev = NULL;
+	_EINT():
+}
+
+void StartTimer(struct Timer *t)
+{
+	t->state = TMR_STATE_RUNNING;
 }
 
 void StopTimer(struct Timer *timer)
 {
-	if (timer == NULL && timer->flag == NO_USE_TIMER)
+	if (timer == NULL && timer->flag == TMR_STATE_UNUSED)
 		return;
 
-	timer->flag = TIMER_STOP;
+	timer->tmr_state = TMR_STATE_STOPPED;
 }
 
 /**************************************************
@@ -183,7 +181,7 @@ void StopTimer(struct Timer *timer)
  **************************************************/
 void TimerB0_ISR(void)
 {
-	UpdateTimer(TIMER_TYPE_MS);
+	UpdateTimer(TMR_TYPE_1KHz);
 	
 	SyncTimerB();     // 在一个定时周期后更新定时器
 }
@@ -196,8 +194,7 @@ void TimerB0_ISR(void)
 */
 uint GetRandomNum(void)
 {	
-	uint	random = TBR;
-	return random+TAR;
+	return TAR;
 }
 
 /**************************************************
@@ -227,10 +224,9 @@ void TimerA3_Init(void)
 	TACTL	|= TASSEL_2 + MC_1 + ID_3 + TACLR;		// SMCLK, Up Mode, DIV:8
 	TACCR0	= 32;
 	TACCTL0	|= CCIE;
-	memset((uchar *)&us_timer[0], 0, sizeof(us_timer));
 }
 
 void TimerA_ISR(void)
 {
-	UpdateTimer(TIMER_TYPE_US);
+	UpdateTimer(TMR_TYPE_50KHz);
 }

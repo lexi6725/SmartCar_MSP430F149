@@ -36,25 +36,35 @@
 #define ENABLE_TIMERB5()		(TBCCTL5 |= CCIE)
 #define ENABLE_TIMERB6()		(TBCCTL6 |= CCIE)
 
+typedef void (*TMR_CALLBACK)(void);
+
 struct Timer {
-	uchar	flag;
-	uint	count;
-	uint	period;
-	void	(*timer_isr)(void);
-	uchar	chksum;
+	uchar 	tmr_type;		/* Should be Set Timer Type: TMR_TYPE_100Hz/TMR_TYPE_10KHz */
+	uchar	tmr_state;		/* Indicates the state of the timer */
+							/*TMR_STATE_UNUSED*/
+							/*TMR_STATE_RUNNING*/
+							/*TMR_STATE_STOPPED*/
+	void	*tmr_next;		/* Link to next Timer */
+	void	*tmr_prev;		/* Link to prev timer */
+	uint	tmr_count;		/* Timer expires */
+	uint	tmr_period;		/* Timer Period */
+	TMR_CALLBACK	tmr_isr;	/* When Timer count == period, run the function*/
+	uchar	tmr_opt;		/* TMR Options: TMR_OPT_ONE_SHOT/TMR_OPT_PERIODIC*/
 };
 
-#define	MS_MAX_TIMERS		8
-#define	US_MAX_TIMERS		4
 
-/* Struct Timer's flag defined*/
-#define TIMER_RUN		0x1A
-#define TIMER_STOP		0xA1
-#define NO_USE_TIMER	0x00
+/* Struct Timer's state defined*/
+#define TMR_STATE_UNUSED	0
+#define TMR_STATE_STOPPED	1
+#define TMR_STATE_COMPLETED	2
+#define TMR_STATE_RUNNING	3
+
+#define TMR_OPT_ONE_SHOT	1
+#define TMR_OPT_PERIODIC	2
 
 /* Define Timer Type */
-#define TIMER_TYPE_MS	0
-#define TIMER_TYPE_US	1
+#define TMR_TYPE_1KHz	1
+#define TMR_TYPE_50KHz	2
 
 extern void TimerA3_Init(void);
 extern void TimerB7_Init(void);
