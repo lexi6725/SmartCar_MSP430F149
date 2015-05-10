@@ -5,33 +5,30 @@
  */
 
 #include "config.h"
+#include "types.h"
 #include "timer.h"
 #include "System.h"
-#include "irda.h"
 
-uint	TimerBRate[7] = {32, 0, 0, 0, 0, 0, 0};
 
-static struct Timer *timer = NULL;
-
-void SyncTimerB(void);
+static Timer_t TimerArray[TIMER_MAX_NUM];
 
 /*
-* 函数名：TimerB7_Init
+* 函数名：Timer_Init
 * 参数：None
 * 返回值：None
-* 功能：初始化定时器B7
+* 功能：初始化定时器
 */
-void TimerB7_Init(void)
+void Timer_Init(void)
 {
-	SyncTimerB();			// Set TimerB7 Period
-	
-	/* TB1~TB3 TB6 To PWM Out Reset/Set */
-	TBCCTL1 = OUTMOD_7;
-	TBCCTL2 = OUTMOD_7;
-	TBCCTL3 = OUTMOD_7;
-	TBCCTL6 = OUTMOD_7;
-	TBCTL |= TASSEL_1 + TBCLR + MC_1;		// ACLK + Up Mode
+	// TimerA3
+	TACTL	|= TASSEL_2 + MC_1 + ID_0 + TACLR;		// SMCLK, Up Mode, DIV:8
+	TACCR0	= (1<<16)-1;					// 1Hz
+	TACCTL0	|= CCIE;
 
+	// TimerB7
+	TBCCR0 = 0x20;							// 1KHz
+	TBCTL |= TASSEL_1 + TBCLR + MC_1;		// ACLK + Up Mode
+	TBCCTL0 |= CCIE;
 }
 
 /**************************************************
@@ -45,132 +42,58 @@ void DisableTimerB(void)
 	TBCTL	= 0 | TBCLR;			// Disable Timer B
 }
 
-/*
-* 函数名：SyncTimerB
-* 参数：None
-* 返回值：None
-* 功能：同步定时器定时周期
-*/
-void SyncTimerB(void)
+uint8_t UpdateTimer(uint8_t type)
 {
-	TBCCR0 = TimerBRate[0];
-	TBCCR1 = TimerBRate[1];
-	TBCCR2 = TimerBRate[2];
-	TBCCR3 = TimerBRate[3];
-	TBCCR4 = TimerBRate[4];
-	TBCCR5 = TimerBRate[5];
-	TBCCR6 = TimerBRate[6];
-}
+	uint8_t index, ret_value;
+	Timer_t *pTimer = &TimerArray[0];
+	ret_value = 0;
 
-/*
-* 函数名：SetIrdaPeriod
-* 参数：rate: 设置Irda定时
-* 返回值：None
-* 功能：为Irda模块提供设置定时时间
-*/
-void SetIrdaPeriod(unsigned int rate)
-{
-	TBCCR4	= rate;
-}
-
-/**************************************************
- * 函数名：SetTimerBRate
- * 参数：TimerBctl:配置的定时器＿Rate：速率
- * 返回值：None
- * 功能：配置TimerB7定时器的某个定时器速率
- **************************************************/
-void SetTimerBRate(unsigned char TimerBctl, unsigned int Rate)
-{
-	TimerBRate[TimerBctl] = Rate;
-}
-
-/*
-* 函数名：GetTimerBRate
-* 参数：TimerBctl：定时器Bx
-* 返回值：None
-* 功能：获取指定定时器的定时时间
-*/
-unsigned int GetTimerBRate(unsigned char TimerBctl)
-{
-	return TimerBRate[TimerBctl];
-}
-
-void UpdateTimer(uchar type)
-{
-	struct Timer *t = timer;
-	
-	while(t != NULL)
+	for (index = 0; index < TIMER_MAX_NUM; ++index)
 	{
-		if (t->tmr_type == type)
+		if ((pTimer->Tmr_Opt&(TMR_STATE_USED|TMR_STATE_STARTED|TMR_OPT_HIGH)==(TMR_STATE_USED|TMR_STATE_STARTED|type))
 		{
-			if (t->tmr_state == TMR_STATE_RUNNING)
+			pTimer->Tmr_Count++;
+			if (pTimer->Tmr_Count==pTimer->Tmr_Period)
 			{
-				if (t->tmr_count++ == t->tmr_period)
-				{
-					t->tmr_isr();
-					if (t->tmr_opt == TMR_OPT_ONE_SHOT)
-					{
-						t->tmr_state = TMR_STATE_STOPPED;
-					}
-					if (t->tmr_opt == TMR_OPT_PERIODIC)
-					{
-						t->tmr_count = 0;
-					}
-				}
+				pTimer->Tmr_Count = 0;
+				ret_value += pTimer->Tmr_CallBack();
+				if (pTimer->Tmr_Opt&TMR_OPT_ONE_SHOT)
+					pTimer->opt	&= ~TMR_STATE_STARTED;
 			}
 		}
-		t = t->next;
 	}
-	
+
+	return ret_value;
 }
 
-void AddTimer(struct Timer *t)
+uint8_t TimerCreate(uint8_t TimerIndex, 
+						TMR_CALLBACK CallBack, 
+						uint16_t period,
+						uint8_t opt
+						)
 {
+	if (TimerIndex>TIMER_MAX_NUM || TimerArray[TimerIndex].opt&TMR_STATE_USED)
+		return 0x81;			// -1
+		
 	_DINT();
-	if (timer == NULL)
-	{
-		timer = t;
-		t->tmr_prev = NULL;
-		t->next = NULL;
-	}
-	else
-	{
-		timer->tmr_next = t;
-		t->tmr_prev = timer;
-		t->tmr_next = timer->tmr_next;
-	}
+	TimerArray[TimerIndex].Tmr_CallBack = CallBack;
+	TimerArray[TimerIndex].Tmr_Period = period;
+	TimerArray[TimerIndex].Tmr_Opt = opt|TMR_STATE_USED;
+	TimerArray[TimerIndex].Tmr_Count = 0;
 	_EINT();
 }
 
-void DelTimer(struct Timer * t)
+uint8_t	TimerChangeState(uint8_t TimerIndex, uint8_t state, uint8_t flag)
 {
-	_DINT():
-	if (timer == t)
-	{
-		timer = t->tmr_next;
-		t->tmr_next->tmr_prev = timer;
-	}
+	if (TimerIndex>TIMER_MAX_NUM || TimerArray[TimerIndex].opt&TMR_STATE_USED)
+		return 0x81;			// -1
+
+	_DINT();
+	if (flag)
+		TimerArray[TimerIndex].opt |= state;
 	else
-	{
-		t->tmr_prev->tmr_next = t->tmr_next;
-		t->tmr_next->tmr_prev = t->tmr_prev;
-	}
-	t->tmr_next = NULL;
-	t->tmr_prev = NULL;
-	_EINT():
-}
-
-void StartTimer(struct Timer *t)
-{
-	t->state = TMR_STATE_RUNNING;
-}
-
-void StopTimer(struct Timer *timer)
-{
-	if (timer == NULL && timer->flag == TMR_STATE_UNUSED)
-		return;
-
-	timer->tmr_state = TMR_STATE_STOPPED;
+		TimerArray[TimerIndex].opt &= ~state;
+	_EINT();
 }
 
 /**************************************************
@@ -181,52 +104,10 @@ void StopTimer(struct Timer *timer)
  **************************************************/
 void TimerB0_ISR(void)
 {
-	UpdateTimer(TMR_TYPE_1KHz);
-	
-	SyncTimerB();     // 在一个定时周期后更新定时器
-}
-
-/*
-* 函数名：GetRandomNum
-* 参数：None
-* 返回值：None
-* 功能：获取一个随机数
-*/
-uint GetRandomNum(void)
-{	
-	return TAR;
-}
-
-/**************************************************
- * 函数名：TimerB1_ISR
- * 参数：None
- * 返回值：None
- * 功能：定时器B1中断服务
- **************************************************/
-void TimerB1_ISR(void)
-{
-	#if defined(MODULE_IRDA)
-	if (TBIV&0x08)
-	{
-	  IRDA_TIMER_ISR();
-	}
-	#endif
-}
-
-/*
-* 函数名：TimerA3_Init
-* 参数：None
-* 返回值：None
-* 功能：初始化TimerA3
-*/
-void TimerA3_Init(void)
-{
-	TACTL	|= TASSEL_2 + MC_1 + ID_3 + TACLR;		// SMCLK, Up Mode, DIV:8
-	TACCR0	= 32;
-	TACCTL0	|= CCIE;
+	UpdateTimer(TMR_OPT_HIGH);
 }
 
 void TimerA_ISR(void)
 {
-	UpdateTimer(TMR_TYPE_50KHz);
+	UpdateTimer(0);
 }

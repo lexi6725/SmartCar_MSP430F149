@@ -21,10 +21,10 @@
 #define		SIZE_1K		(1<<10)
 #define		SIZE_1M		(1<<20)
 
-
-typedef unsigned char	uchar;
-typedef unsigned int	uint;
-typedef unsigned long	ulong;
-typedef unsigned char     BYTE;
+#define TIMER_MAX_NUM	4			//软件定时器个数
+#define TMR_RTC_SECOND		0
+#define TMR_MOTOR_FREQ		1
+#define	TMR_MOTOR_LEFT		2
+#define	TMR_MOTOR_RIGHT 	3
 
 #endif

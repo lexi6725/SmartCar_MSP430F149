@@ -7,57 +7,21 @@
 #ifndef __MOTOR_H__
 #define __MOTOR_H__
 
-#define MOTOR_ALL		0
-#define MOTOR_LF		1
-#define MOTOR_LB		2
-#define MOTOR_RF		3
-#define MOTOR_RB		6
-
 #define MAXMOTORNUM		4
-
-/* 电机方向定义*/
-#define dirDEBOOST		0
-
-// 左转,右转,前进电机都往前转
-#define dirFRONT		1
-#define dirLEFTFRONT	1
-#define dirRIGHTFRONT	1
-// 左退,右退,后退电机都往后转
-#define dirBACK			2
-#define dirLEFTBACK		2
-#define dirRIGHTBACK		2
-// 左自转,右自转电机方向相反
-#define dirLEFT			3
-#define	dirRIGHT		4
 
 #define MAXRATE		31
 
-/* motor_Flag bits*/
-#define bDIR		(1<<0)
-#define bFRONT		(1<<1)
-#define bBACK		(1<<2)
+#define		MOTOR_PWM_DIR_OUT		(P6DIR	|= (BIT0+BIT1))
+#define		MOTOR_OUT_1_PWM(x)		(P6OUT	|= (BIT0<<x))
+#define		MOTOR_OUT_0_PWM(x)		(P6OUT &= ~(BIT0<<x))
 
-struct Direct{
-	int		x;
-	int		y;
-	int		z;
-};
-
-struct Motor {
-	uchar	MotorFlag;
-	uint*	MotorRate[4];
-	
-	struct Direct dir;
-	float	angle;
-};
+#define 	MOTOR_DIRECT_DIR_OUT	(P6DIR	|= (BIT2+BIT3+BIT4+BIT5))
+#define		MOTOR_DIRECT_FORWARD(x)	(P6OUT	&= ~(0x3<<(((x)+1)*2)); P6OUT	|= (0x2<<(((x)+1)*2)))
+#define		MOTOR_DIRECT_REV(x)		(P6OUT	&= ~(0x3<<(((x)+1)*2)); P6OUT	|= (0x1<<(((x)+1)*2)))
+#define		MOTOR_DIRECT_STOP(x)	(P6OUT	&= ~(0x3<<(((x)+1)*2)))
 
 extern void Motor_Init(void);
 extern void EnableMotor(void);
 extern void DisableMoter(void);
-extern void SetMotorRate(uchar motorctl, uchar rate);
-extern void SetMotorDirs(uchar dir);
-extern void SyncMotorRate(uchar type);
-extern void Motor_Status_Update(void);
-extern uchar Get_Motor_Status(void);
-extern uchar Get_Motor_Rate(uchar *pdat, uchar motor_type);
+
 #endif
