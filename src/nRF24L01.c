@@ -46,7 +46,7 @@ void nRF24L01_IO_set(void)
     	P5SEL |= (BIT1+BIT2+BIT3);
     	UCTL1 = SWRST;
     	UCTL1 |= (CHAR+SYNC+MM);
-    	UTCTL1	= (CKPL+SSEL1+STC);
+    	UTCTL1	= (CKPH+SSEL1+STC);
     	UBR01	= 0x04;
     	UBR11	= 0x00;
     	UMCTL1 = 0;
