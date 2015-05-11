@@ -12,6 +12,7 @@
 
 //#include "spi.h"
 #ifdef MODULE_NRF24L01
+#define HW_SPI	1
 
 uchar nRF24L01_Status = 0;
 uchar TestBuf = 0;
@@ -33,18 +34,34 @@ void delay_1ms(unsigned int i)
 
 void nRF24L01_IO_set(void)
 {
-      P4DIR |= BIT4;         //ce
-      P4DIR |= BIT5;         //csn
-      P5DIR |= BIT3;         //sck
-      P5DIR |= BIT2;         //mosi out
-      P5DIR &=~BIT1;         //MISO IN 
-      P1DIR &=~BIT4;         //IRQ
-      P1IFG &= ~BIT4;
-      P1IES	|= BIT4;
-      P1IE	|= BIT4;
-      
-      nRF24L01_SCK_0;
-      nRF24L01_CE_0;
+	P4DIR |= BIT4;         //ce
+	P4DIR |= BIT5;         //csn
+
+
+	P5DIR |= BIT3;         //sck
+	P5DIR |= BIT2;         //mosi out
+	P5DIR &=~BIT1;         //MISO IN 
+	
+	#if defined(HW_SPI)
+    	P5SEL |= (BIT1+BIT2+BIT3);
+    	UCTL1 = SWRST;
+    	UCTL1 |= (CHAR+SYNC+MM);
+    	UTCTL1	= (CKPH+SSEL1+STC);
+    	UBR01	= 0x04;
+    	UBR11	= 0x00;
+    	UMCTL1 = 0;
+    	UCTL1 &= ~SWRST;
+    	ME2	|= USPIE1;
+	#endif
+	P1DIR &=~BIT4;         //IRQ
+	P1IFG &= ~BIT4;
+	P1IES|= BIT4;
+	P1IE|= BIT4;
+
+#if !defined(HW_SPI)
+	nRF24L01_SCK_0;
+#endif
+	nRF24L01_CE_0;
 }
 
 void MOSI_Pin(BYTE state)
@@ -62,7 +79,15 @@ BYTE MISO_Pin(void)
 uchar SPI_RW(uchar byte)
 {
 	uchar bit_ctr;
+#if defined(HW_SPI)
+	bit_ctr = 100;
+	TXBUF1 = byte;
 
+	//while (!(IFG2&UTXIFG1));
+	while(bit_ctr--);
+
+	byte = RXBUF1;
+#else
 	for (bit_ctr = 0; bit_ctr<8; bit_ctr++)
 	{
 		MOSI_Pin(byte&0x80);
@@ -71,6 +96,7 @@ uchar SPI_RW(uchar byte)
 		byte	|= MISO_Pin();
 		nRF24L01_SCK_0;
 	}
+#endif
 	return byte;
 }
 
